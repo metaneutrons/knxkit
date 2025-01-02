@@ -2,6 +2,13 @@
 name = "knxkit_cli"
 version = "0.1.0"
 edition = "2021"
+authors = ["Alexey Aristov <aav@acm.org>"]
+license = "EPL-2.0 OR GPL-3.0"
+readme = "README.md"
+repository = "https://github.com/knxkit/knxkit"
+description = "Command line utility for KNX devices and networks"
+categories = ["network-programming", "api-bindings", "command-line-utilities"]
+keywords = ["knx", "iot", "home-automation", "smart-home"]
 autobins = false
 
 [dependencies]
@@ -12,8 +19,8 @@ tracing = "0.1"
 local-ip-address = "0.6"
 hex = "0.4"
 clap = { version = "4.5", features = ["derive", "env"] }
-knxkit = "0.1.2"
-knxkit_dpt = "0.1.1"
+knxkit = "0.1.3"
+knxkit_dpt = "0.1.2"
 time = { version = "0.3.37", features = ["formatting", "local-offset"] }
 nom = "7.1.3"
 url = "2.5.4"
