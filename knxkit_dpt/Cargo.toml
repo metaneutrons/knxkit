@@ -1,6 +1,6 @@
 [package]
 name = "knxkit_dpt"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = ["Alexey Aristov <aav@acm.org>"]
 license = "EPL-2.0 OR GPL-3.0"
@@ -10,7 +10,7 @@ categories = ["network-programming", "api-bindings"]
 keywords = ["knx", "iot", "home-automation", "smart-home"]
 
 [dependencies]
-knxkit = "0.1.1"
+knxkit = "0.1.3"
 encoding = "0.2.33"
 bitstream-io = "2.5"
 num-traits = "0.2.19"
