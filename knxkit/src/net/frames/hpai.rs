@@ -49,8 +49,7 @@ impl HPAI {
         let (input, _length) = parse_u8(input0)?;
         // FIXME check length
 
-        let (input, (protocol_code, ip, port)) =
-            parse_tuple((parse_u8, parse_u32, parse_u16))(input)?;
+        let (input, (protocol_code, ip, port)) = ((parse_u8, parse_u32, parse_u16)).parse(input)?;
 
         let ip = std::net::Ipv4Addr::from(ip);
 

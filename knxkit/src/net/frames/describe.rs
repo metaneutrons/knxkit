@@ -49,9 +49,9 @@ pub struct DescriptionResponse {
 impl FramePayload for DescriptionResponse {
     const SERVICE_TYPE: ServiceType = ServiceType::DescriptionResponse;
 
-    fn parse(input: Input<'_>) -> Result<Self> {
+    fn parse(input: Input) -> Result<Self> {
         let (input, (device_information, supported_services)) =
-            parse_tuple((DeviceInformation::parse, ServiceEntry::parse_many))(input)?;
+            ((DeviceInformation::parse, ServiceEntry::parse_many)).parse(input)?;
 
         let mut response = DescriptionResponse {
             device_information,

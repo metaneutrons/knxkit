@@ -61,7 +61,7 @@ pub struct DeviceInformation {
 }
 
 impl DeviceInformation {
-    pub fn parse(input0: Input<'_>) -> Result<Self> {
+    pub fn parse(input0: Input) -> Result<Self> {
         let (input, _) = parse_u8(input0)?;
         let (input, _) = parse_token(DescriptionType::DeviceInfo.to_u8().unwrap())(input)?;
         let (input, medium) = parse_enum(8)(input)?;

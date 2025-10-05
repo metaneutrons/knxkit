@@ -23,7 +23,7 @@ impl FramePayload for DisconnectRequest {
 
     fn parse(input: Input) -> Result<Self> {
         let (input, (channel, _reserved, control)) =
-            parse_tuple((parse_u8, parse_u8, HPAI::parse))(input)?;
+            ((parse_u8, parse_u8, HPAI::parse)).parse(input)?;
 
         Ok((input, DisconnectRequest { channel, control }))
     }
@@ -44,7 +44,7 @@ impl FramePayload for DisconnectResponse {
     const SERVICE_TYPE: ServiceType = ServiceType::DisconnectResponse;
 
     fn parse(input: Input) -> Result<Self> {
-        let (input, (channel, status)) = parse_tuple((parse_u8, parse_u8))(input)?;
+        let (input, (channel, status)) = ((parse_u8, parse_u8)).parse(input)?;
         Ok((input, DisconnectResponse { channel, status }))
     }
 

@@ -16,7 +16,6 @@ use nom::{
     bytes::complete::tag,
     character::complete::digit1,
     combinator::{eof, map_res, verify},
-    sequence::tuple,
     Finish, IResult,
 };
 
@@ -65,19 +64,19 @@ impl FromStr for IndividualAddress {
             bytes::complete::tag,
             character::complete::digit1,
             combinator::{map_res, verify},
-            sequence::tuple,
             Finish, IResult,
         };
 
         fn parse_individual_address(input: &str) -> IResult<&str, (u8, u8, u8)> {
-            let (input, (area, _, line, _, device, _)) = tuple((
+            let (input, (area, _, line, _, device, _)) = ((
                 verify(map_res(digit1, FromStr::from_str), |n| *n <= 15),
                 tag("."),
                 verify(map_res(digit1, FromStr::from_str), |n| *n <= 15),
                 tag("."),
                 map_res(digit1, FromStr::from_str),
                 eof,
-            ))(input)?;
+            ))
+                .parse(input)?;
 
             Ok((input, (area, line, device)))
         }
@@ -156,14 +155,15 @@ impl FromStr for GroupAddress {
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         fn parse_group_address(input: &str) -> IResult<&str, (u8, u8, u8)> {
-            let (input, (main, _, middle, _, sub, _)) = tuple((
+            let (input, (main, _, middle, _, sub, _)) = ((
                 verify(map_res(digit1, FromStr::from_str), |n| *n <= 30),
                 tag("/"),
                 verify(map_res(digit1, FromStr::from_str), |n| *n <= 7),
                 tag("/"),
                 map_res(digit1, FromStr::from_str),
                 eof,
-            ))(input)?;
+            ))
+                .parse(input)?;
 
             Ok((input, (main, middle, sub)))
         }

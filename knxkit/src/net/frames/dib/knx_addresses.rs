@@ -7,6 +7,8 @@
 //
 // SPDX-License-Identifier: EPL-2.0 OR GPL-3.0
 
+use nom::Parser;
+
 use super::DescriptionType;
 use crate::core::{address::IndividualAddress, util::prelude::*};
 
@@ -18,13 +20,13 @@ pub struct KNXAddresses {
 }
 
 impl KNXAddresses {
-    pub fn parse(input: Input<'_>) -> Result<Self> {
+    pub fn parse(input: Input) -> Result<Self> {
         let (input, length) = parse_u8(input)?;
         let (input, _) = parse_token(DescriptionType::KNXAddresses.to_u8().unwrap())(input)?;
 
         let (input, address) = parse_u16(input).map_value(IndividualAddress::new)?;
         let (input, additional) =
-            parse_count(IndividualAddress::parse, ((length - 4) / 2) as usize)(input)?;
+            parse_count(IndividualAddress::parse, ((length - 4) / 2) as usize).parse(input)?;
 
         Ok((
             input,

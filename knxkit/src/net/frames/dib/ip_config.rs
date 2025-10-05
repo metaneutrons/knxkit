@@ -23,7 +23,7 @@ pub struct IpConfig {
 }
 
 impl IpConfig {
-    pub fn parse(input: Input<'_>) -> Result<Self> {
+    pub fn parse(input: Input) -> Result<Self> {
         let (input, _length) = parse_u8(input)?;
         let (input, _) = parse_token(DescriptionType::IpConfig.to_u8().unwrap())(input)?;
 

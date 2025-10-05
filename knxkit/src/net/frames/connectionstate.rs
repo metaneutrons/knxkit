@@ -24,7 +24,7 @@ impl FramePayload for ConnectionStateRequest {
 
     fn parse(input: Input) -> Result<Self> {
         let (input, (channel, _reserved, control)) =
-            parse_tuple((parse_u8, parse_u8, HPAI::parse))(input)?;
+            ((parse_u8, parse_u8, HPAI::parse)).parse(input)?;
         Ok((input, ConnectionStateRequest { channel, control }))
     }
 
@@ -53,7 +53,7 @@ impl FramePayload for ConnectionStateResponse {
     const SERVICE_TYPE: ServiceType = ServiceType::ConnectionStateResponse;
 
     fn parse(input: Input) -> Result<Self> {
-        let (input, (channel, status)) = parse_tuple((parse_u8, parse_enum(8)))(input)?;
+        let (input, (channel, status)) = ((parse_u8, parse_enum(8))).parse(input)?;
         Ok((input, ConnectionStateResponse { channel, status }))
     }
 

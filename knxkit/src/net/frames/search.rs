@@ -45,12 +45,13 @@ pub struct SearchResponse {
 impl FramePayload for SearchResponse {
     const SERVICE_TYPE: ServiceType = ServiceType::SearchResponse;
 
-    fn parse(input: Input<'_>) -> Result<Self> {
-        let (input, (hpai, device_information, supported_services)) = parse_tuple((
+    fn parse(input: Input) -> Result<Self> {
+        let (input, (hpai, device_information, supported_services)) = ((
             HPAI::parse,
             DeviceInformation::parse,
             ServiceEntry::parse_many,
-        ))(input)?;
+        ))
+            .parse(input)?;
 
         Ok((
             input,

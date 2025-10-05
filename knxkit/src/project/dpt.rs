@@ -51,15 +51,14 @@ impl FromStr for DPT {
             bytes::complete::tag,
             character::complete::digit1,
             combinator::{eof, map_res},
-            sequence::tuple,
-            Finish,
+            Finish, Parser,
         };
 
         type NomErr<'a> = nom::error::Error<&'a str>;
 
         let s = s.trim();
 
-        let (_, (main, _, sub, _)) = tuple((
+        let (_, (main, _, sub, _)) = ((
             map_res(digit1::<_, NomErr>, &str::parse::<u16>),
             tag("."),
             alt((
@@ -67,9 +66,10 @@ impl FromStr for DPT {
                 map_res(digit1, |s: &str| s.parse::<u16>().map(Some)),
             )),
             eof,
-        ))(s)
-        .finish()
-        .map_err(|_| Self::Err::InvalidInput(s.to_string()))?;
+        ))
+            .parse(s)
+            .finish()
+            .map_err(|_| Self::Err::InvalidInput(s.to_string()))?;
 
         Ok(DPT { main, sub })
     }

@@ -21,7 +21,7 @@ pub struct Connection {
 
 impl Connection {
     pub fn parse(input: Input) -> Result<Self> {
-        let (input, (channel, sequence)) = parse_tuple((parse_u8, parse_u8))(input)?;
+        let (input, (channel, sequence)) = ((parse_u8, parse_u8)).parse(input)?;
 
         Ok((input, Connection { channel, sequence }))
     }
@@ -42,12 +42,13 @@ impl FramePayload for TunnelingRequest {
     const SERVICE_TYPE: ServiceType = ServiceType::TunnelingRequest;
 
     fn parse(input: Input) -> Result<Self> {
-        let (input, (_length, connection, _reserved, cemi)) = parse_tuple((
+        let (input, (_length, connection, _reserved, cemi)) = ((
             parse_u8,
             Connection::parse,
             parse_u8,
             parse_take(input.len() - 4),
-        ))(input)?;
+        ))
+            .parse(input)?;
 
         Ok((
             input,
@@ -81,7 +82,7 @@ impl FramePayload for TunnelingACK {
 
     fn parse(input: Input) -> Result<Self> {
         let (input, (_length, connection, status)) =
-            parse_tuple((parse_u8, Connection::parse, parse_u8))(input)?;
+            ((parse_u8, Connection::parse, parse_u8)).parse(input)?;
 
         Ok((input, TunnelingACK { connection, status }))
     }

@@ -37,8 +37,7 @@ impl<C: CRI> FramePayload for ConnectRequest<C> {
     const SERVICE_TYPE: ServiceType = ServiceType::ConnectRequest;
 
     fn parse(input: Input) -> Result<ConnectRequest<C>> {
-        let (input, (control, data, cri)) =
-            parse_tuple((HPAI::parse, HPAI::parse, C::parse))(input)?;
+        let (input, (control, data, cri)) = ((HPAI::parse, HPAI::parse, C::parse)).parse(input)?;
 
         Ok((input, ConnectRequest { control, data, cri }))
     }
@@ -65,7 +64,7 @@ pub struct CRITunnel {
 impl CRI for CRITunnel {
     fn parse(input: Input) -> Result<CRITunnel> {
         let (input, (_, _, layer, _)) =
-            parse_tuple((parse_u8, parse_u8, parse_enum(8), parse_u8))(input)?;
+            ((parse_u8, parse_u8, parse_enum(8), parse_u8)).parse(input)?;
 
         Ok((input, CRITunnel { layer }))
     }
@@ -115,10 +114,10 @@ impl<C: CRD> FramePayload for ConnectResponse<C> {
     const SERVICE_TYPE: ServiceType = ServiceType::ConnectResponse;
 
     fn parse(input: Input) -> Result<ConnectResponse<C>> {
-        let (input, (channel, status)) = parse_tuple((parse_u8, parse_enum(8)))(input)?;
+        let (input, (channel, status)) = ((parse_u8, parse_enum(8))).parse(input)?;
 
         if status == ConnectStatus::NoError {
-            let (input, (hpai, crd)) = parse_tuple((HPAI::parse, C::parse))(input)?;
+            let (input, (hpai, crd)) = ((HPAI::parse, C::parse)).parse(input)?;
 
             Ok((input, ConnectResponse::Ok { channel, hpai, crd }))
         } else {
@@ -142,7 +141,7 @@ impl<C: CRD> FramePayload for ConnectResponse<C> {
 impl CRD for CRDTunnel {
     fn parse(input: Input) -> Result<CRDTunnel> {
         let (input, (_, _, address)) =
-            parse_tuple((parse_u8, parse_u8, IndividualAddress::parse))(input)?;
+            ((parse_u8, parse_u8, IndividualAddress::parse)).parse(input)?;
         Ok((input, CRDTunnel { address }))
     }
 

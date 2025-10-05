@@ -18,7 +18,7 @@ pub struct ManufacturerData {
 }
 
 impl ManufacturerData {
-    pub fn parse(input: Input<'_>) -> Result<Self> {
+    pub fn parse(input: Input) -> Result<Self> {
         let (input, length) = parse_u8(input)?;
         let (input, _) = parse_token(DescriptionType::MFRData.to_u8().unwrap())(input)?;
 

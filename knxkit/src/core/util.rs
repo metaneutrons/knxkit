@@ -26,8 +26,7 @@ pub mod prelude {
         error::{ErrorKind, ParseError},
         multi::count as parse_count,
         number::complete::{be_u16 as parse_u16, be_u32 as parse_u32, be_u8 as parse_u8},
-        sequence::tuple as parse_tuple,
-        Err, Finish, IResult,
+        Err, Finish, IResult, Parser,
     };
 
     pub use num_derive::{FromPrimitive, ToPrimitive};

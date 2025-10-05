@@ -28,7 +28,7 @@ pub struct ServiceEntry {
 
 impl ServiceEntry {
     pub fn parse(input: Input) -> Result<Self> {
-        let (input, (family, version)) = parse_tuple((parse_enum(8), parse_u8))(input)?;
+        let (input, (family, version)) = (parse_enum(8), parse_u8).parse(input)?;
 
         Ok((input, ServiceEntry { family, version }))
     }
@@ -36,12 +36,12 @@ impl ServiceEntry {
     pub fn parse_many(input0: Input) -> Result<Vec<Self>> {
         use super::DescriptionType;
 
-        let (input, (length, type_)) = parse_tuple((parse_u8, parse_u8))(input0)?;
+        let (input, (length, type_)) = ((parse_u8, parse_u8)).parse(input0)?;
 
         if type_ != DescriptionType::SuppSvcFamilies.to_u8().unwrap() {
             return Err(nom::Err::Failure(Error::general("Unexpected DIB", input0)));
         }
 
-        nom::multi::count(ServiceEntry::parse, ((length - 2) / 2) as usize)(input)
+        nom::multi::count(ServiceEntry::parse, ((length - 2) / 2) as usize).parse(input)
     }
 }

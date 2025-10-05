@@ -23,14 +23,14 @@ pub struct IpCurrentConfig {
 }
 
 impl IpCurrentConfig {
-    pub fn parse(input: Input<'_>) -> Result<Self> {
+    pub fn parse(input: Input) -> Result<Self> {
         let (input, _length) = parse_u8(input)?;
         let (input, _) = parse_token(DescriptionType::IpCurConfig.to_u8().unwrap())(input)?;
 
-        let (input, (address, netmask, gateway, dhcp_server, assignment_method, _)) =
-            parse_tuple((
-                parse_u32, parse_u32, parse_u32, parse_u32, parse_u8, parse_u8,
-            ))(input)?;
+        let (input, (address, netmask, gateway, dhcp_server, assignment_method, _)) = ((
+            parse_u32, parse_u32, parse_u32, parse_u32, parse_u8, parse_u8,
+        ))
+            .parse(input)?;
 
         Ok((
             input,
