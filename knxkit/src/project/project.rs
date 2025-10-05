@@ -7,8 +7,11 @@
 //
 // SPDX-License-Identifier: EPL-2.0 OR GPL-3.0
 
-use roxmltree::Document;
+use std::sync::Arc;
 use std::{io::Read, path::Path};
+
+use interner::shared::StringPool;
+use roxmltree::Document;
 
 use crate::project::{devices::Devices, error::Error, groups::Groups, master};
 
@@ -26,12 +29,14 @@ impl Project {
         let file = std::fs::File::open(file_name)?;
         let mut zip = zip::ZipArchive::new(file)?;
 
+        let symbols = Arc::new(StringPool::default());
+
         let master = {
             let mut master = zip.by_name("knx_master.xml")?;
             let mut contents = String::new();
             master.read_to_string(&mut contents)?;
 
-            master::MasterData::parse(&Document::parse(&contents)?)
+            master::MasterData::parse(&Document::parse(&contents)?, symbols.clone())
         }?;
 
         let regex = regex::Regex::new(r"^P-(.*).signature$").expect("invalid regex");
@@ -51,8 +56,8 @@ impl Project {
         pfile.read_to_string(&mut contents)?;
         let pfile = Document::parse(&contents)?;
 
-        let devices = Devices::parse(&pfile)?;
-        let groups = Groups::parse(&pfile, &master)?;
+        let devices = Devices::parse(&pfile, symbols.clone())?;
+        let groups = Groups::parse(&pfile, &master, symbols.clone())?;
 
         Ok(Project {
             devices,

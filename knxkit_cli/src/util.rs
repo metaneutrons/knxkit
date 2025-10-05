@@ -7,13 +7,13 @@
 //
 // SPDX-License-Identifier: EPL-2.0 OR GPL-3.0
 
+use std::fmt::Display;
+
 use anyhow::Result;
 
-use knxkit::{
-    connection::{remote::RemoteSpec, KnxBusConnection},
-    project::CowString,
-};
 use tokio::signal::unix::{signal, Signal, SignalKind};
+
+use knxkit::connection::{remote::RemoteSpec, KnxBusConnection};
 
 use crate::CLI;
 
@@ -25,18 +25,19 @@ pub async fn connect(remote: &RemoteSpec) -> Result<impl KnxBusConnection> {
     Ok(knxkit::connection::remote::connect(CLI.globals.local_address, remote).await?)
 }
 
-pub trait Defaults<'a> {
-    fn unwrap_or_missing(self) -> CowString<'a>;
-    fn unwrap_or_empty(self) -> CowString<'a>;
+pub trait Defaults {
+    fn unwrap_or_missing(self) -> impl Display;
+    fn unwrap_or_empty(self) -> impl Display;
 }
 
-impl<'a> Defaults<'a> for Option<CowString<'a>> {
-    fn unwrap_or_missing(self) -> CowString<'a> {
-        self.unwrap_or_else(|| CowString::Ref("-"))
+impl<T: Display> Defaults for Option<T> {
+    fn unwrap_or_missing(self) -> impl Display {
+        self.map(|s| s.to_string()).unwrap_or("-".to_string())
     }
 
-    fn unwrap_or_empty(self) -> CowString<'a> {
-        self.unwrap_or_else(|| CowString::Ref(""))
+    fn unwrap_or_empty(self) -> impl Display {
+        self.map(|s| s.to_string())
+            .unwrap_or_else(|| String::default())
     }
 }
 

@@ -9,28 +9,32 @@
 
 use std::borrow::Borrow;
 use std::collections::HashMap;
+use std::sync::Arc;
 
+use interner::shared::StringPool;
 use roxmltree::Document;
 
+use super::SharedString;
 use crate::core::address::IndividualAddress;
 use crate::project::error::Error;
 use crate::project::util::{by_name, NodeExt};
 
 #[derive(Clone, Debug)]
 pub struct Device {
-    pub name: String,
+    pub name: SharedString,
     pub address: IndividualAddress,
 }
 
 #[derive(Clone, Debug)]
 pub struct Devices {
     pub devices: Vec<Device>,
-    by_name: HashMap<String, usize>,
+    by_name: HashMap<SharedString, usize>,
     by_address: HashMap<IndividualAddress, usize>,
+    symbols: Arc<StringPool>,
 }
 
 impl Devices {
-    pub(crate) fn parse(document: &Document) -> Result<Self, Error> {
+    pub(crate) fn parse(document: &Document, symbols: Arc<StringPool>) -> Result<Self, Error> {
         let mut devices = Vec::new();
 
         for area_node in document.descendants().filter(by_name("Area")) {
@@ -39,7 +43,8 @@ impl Devices {
                 let line = line_node.att("Address")?;
                 for device_node in line_node.descendants().filter(by_name("DeviceInstance")) {
                     let device = device_node.att("Address")?;
-                    let name = device_node.att("Name")?;
+                    let name = device_node.intern(&symbols, "Name")?;
+
                     let address = IndividualAddress::from_components((area, line, device));
 
                     devices.push(Device { name, address });
@@ -59,11 +64,13 @@ impl Devices {
             devices,
             by_name,
             by_address,
+            symbols,
         })
     }
 
     pub fn by_name(&self, name: &str) -> Option<&Device> {
-        self.by_name.get(name).map(|ix| &self.devices[*ix])
+        let name = self.symbols.get(name);
+        self.by_name.get(&name).map(|ix| &self.devices[*ix])
     }
 
     pub fn by_address(&self, address: impl Borrow<IndividualAddress>) -> Option<&Device> {

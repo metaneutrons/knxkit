@@ -11,34 +11,34 @@ use std::borrow::Borrow;
 
 use knxkit::{
     core::{address::GroupAddress, DataPoint},
-    project::{CowString, Project, ProjectExt},
+    project::{Project, ProjectExt},
 };
 
 pub trait ProjectExtDPT: ProjectExt {
-    fn group_dpt_name(&self, address: impl Borrow<GroupAddress>) -> Option<CowString>;
-    fn group_dpt_unit(&self, address: impl Borrow<GroupAddress>) -> Option<CowString>;
-    fn group_value(&self, address: GroupAddress, dp: &DataPoint, unit: bool) -> Option<CowString>;
+    fn group_dpt_name(&self, address: impl Borrow<GroupAddress>) -> Option<&str>;
+    fn group_dpt_unit(&self, address: impl Borrow<GroupAddress>) -> Option<&str>;
+    fn group_value(&self, address: GroupAddress, dp: &DataPoint, unit: bool) -> Option<String>;
     fn group_json(&self, address: GroupAddress, dp: &DataPoint) -> Option<serde_json::Value>;
 }
 
 impl ProjectExtDPT for Option<&Project> {
-    fn group_dpt_name(&self, address: impl Borrow<GroupAddress>) -> Option<CowString> {
+    fn group_dpt_name(&self, address: impl Borrow<GroupAddress>) -> Option<&str> {
         self.and_then(|project| {
             project
                 .groups
                 .by_address(address)
                 .and_then(|group| group.dpt.and_then(|dpt| crate::typeinfo::lookup(dpt)))
-                .map(|type_info| CowString::from(type_info.text.unwrap_or(type_info.name)))
+                .map(|type_info| type_info.text.unwrap_or(type_info.name))
         })
     }
 
-    fn group_dpt_unit(&self, address: impl Borrow<GroupAddress>) -> Option<CowString> {
+    fn group_dpt_unit(&self, address: impl Borrow<GroupAddress>) -> Option<&str> {
         self.and_then(|project| {
             project
                 .groups
                 .by_address(address)
                 .and_then(|group| group.dpt.and_then(|dpt| crate::typeinfo::lookup(dpt)))
-                .and_then(|type_info| type_info.unit.map(CowString::from))
+                .and_then(|type_info| type_info.unit)
         })
     }
 
@@ -51,22 +51,20 @@ impl ProjectExtDPT for Option<&Project> {
             })
     }
 
-    fn group_value(&self, address: GroupAddress, dp: &DataPoint, unit: bool) -> Option<CowString> {
+    fn group_value(&self, address: GroupAddress, dp: &DataPoint, unit: bool) -> Option<String> {
         self.and_then(|project| project.groups.by_address(address).and_then(|g| g.dpt))
-            .and_then(|dpt| {
-                crate::generic::try_decode(dpt, dp)
-                    .map(|d| CowString::from(d.to_string()))
-                    .ok()
-            })
+            .and_then(|dpt| crate::generic::try_decode(dpt, dp).ok())
             .map(|data| {
                 if unit {
-                    CowString::from(format!(
+                    format!(
                         "{}{}",
                         data,
-                        self.group_dpt_unit(address).unwrap_or(CowString::Ref(""))
-                    ))
+                        self.group_dpt_unit(address)
+                            .map(|s| s.to_string())
+                            .unwrap_or(String::default())
+                    )
                 } else {
-                    CowString::from(format!("{}", data))
+                    format!("{}", data)
                 }
             })
     }

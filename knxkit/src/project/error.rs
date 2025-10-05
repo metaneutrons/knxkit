@@ -7,6 +7,8 @@
 //
 // SPDX-License-Identifier: EPL-2.0 OR GPL-3.0
 
+use std::borrow::Cow;
+
 /// Represents the various errors that can occur in the KNXKit project.
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -16,7 +18,7 @@ pub enum Error {
 
     /// Represents a parsing error with a string message.
     #[error("Parse error: {0}")]
-    ParseError(String),
+    ParseError(Cow<'static, str>),
 
     /// Represents an error that occurs during ZIP operations.
     #[error("ZIP Error: {0}")]

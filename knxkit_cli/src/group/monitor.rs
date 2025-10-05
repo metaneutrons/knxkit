@@ -20,7 +20,7 @@ use knxkit::{
         cemi::CEMI,
         tpdu::TPDU,
     },
-    project::{CowString, ProjectExt},
+    project::ProjectExt,
 };
 
 use knxkit_dpt::project::ProjectExtDPT;
@@ -59,15 +59,13 @@ fn format_cemi(cemi: &CEMI, format: &Format) -> Result<Option<String>> {
 
             let dpt = project
                 .group_dpt(*dst)
-                .map(|dpt| CowString::from(dpt.to_string()))
+                .map(|dpt| dpt.to_string())
                 .unwrap_or_missing();
+
             let dpt_name = project.group_dpt_name(dst).unwrap_or_missing();
             let dpt_unit = project.group_dpt_unit(dst).unwrap_or_missing();
 
-            let data_hex = data
-                .as_ref()
-                .map(|dp| CowString::from(dp.to_string()))
-                .unwrap_or_missing();
+            let data_hex = data.as_ref().map(|dp| dp.to_string()).unwrap_or_missing();
 
             let data_value = data
                 .as_ref()
@@ -83,11 +81,15 @@ fn format_cemi(cemi: &CEMI, format: &Format) -> Result<Option<String>> {
             let src_address = src.to_string();
             let src = project
                 .device_name(src)
+                .map(|s| s.to_string())
                 .unwrap_or_else(|| src.to_string().into());
 
             let dst_name = project.group(dst).unwrap_or_missing();
             let dst_address = dst.to_string();
-            let dst = project.group(dst).unwrap_or_else(|| dst.to_string().into());
+            let dst = project
+                .group(dst)
+                .map(|d| d.to_string())
+                .unwrap_or_else(|| dst.to_string());
 
             let context = [
                 ("time", Formattable::display(&time)),

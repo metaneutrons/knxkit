@@ -19,16 +19,20 @@ pub fn generate(masterdata: &MasterData) -> TokenStream {
     subtypes.sort_by_key(|s| s.dpt);
 
     let typeinfos = subtypes.iter().map(|subtype| {
-        let name = &subtype.name;
+        let name = &subtype.name.to_string();
         let text = subtype
             .text
             .as_ref()
+            .map(|s| s.to_string())
             .map(|text| quote!(Some(#text)))
             .unwrap_or_else(|| quote!(None));
         let new_dpt = util::new_dpt(subtype);
 
         let unit = if subtype.formats.len() == 1 {
-            subtype.formats[0].unit().map(|unit| quote!(Some(#unit)))
+            subtype.formats[0]
+                .unit()
+                .map(|s| s.to_string())
+                .map(|unit| quote!(Some(#unit)))
         } else {
             None
         }

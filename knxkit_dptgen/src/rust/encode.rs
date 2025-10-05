@@ -50,7 +50,7 @@ fn encode_format(writer: &Ident, value: &TokenStream, format: &Format) -> TokenS
 
         Format::String {
             width: 8, encoding, ..
-        } => match encoding.as_str() {
+        } => match &**encoding.to_owned() {
             "us-ascii" => quote! {
                 writer.write_from(#value as u8).unwrap();
             },
@@ -69,11 +69,7 @@ fn encode_format(writer: &Ident, value: &TokenStream, format: &Format) -> TokenS
             variable_length: false,
             ..
         } => {
-            let codec = match encoding.as_str() {
-                "iso-8859-1" => quote!(ISO_8859_1),
-                "us-ascii" => quote!(ASCII),
-                _ => panic!("unsupported encoding: {}", encoding),
-            };
+            let codec = super::codec(encoding);
 
             quote! {
                 let mut buffer = vec![0u8; (#width / 8) as usize];
@@ -88,12 +84,7 @@ fn encode_format(writer: &Ident, value: &TokenStream, format: &Format) -> TokenS
             variable_length: true,
             ..
         } => {
-            let codec = match encoding.as_str() {
-                "iso-8859-1" => quote!(ISO_8859_1),
-                "utf-8" => quote!(UTF_8),
-
-                _ => panic!("unsupported encoding: {}", encoding),
-            };
+            let codec = super::codec(encoding);
 
             quote! {
                 let bytes = #codec

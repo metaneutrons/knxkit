@@ -12,7 +12,10 @@ use std::{
     str::{self, FromStr},
 };
 
+use interner::shared::StringPool;
 use roxmltree::Node;
+
+use super::SharedString;
 
 use crate::project::error::Error;
 
@@ -30,25 +33,29 @@ pub trait NodeExt<'a, 'input: 'a> {
     fn att_opt<T: FromStr>(&self, name: &'static str) -> Result<Option<T>, Error>
     where
         T::Err: Debug;
+
+    fn intern(&self, symbols: &StringPool, name: &'static str) -> Result<SharedString, Error>;
+    fn intern_opt(&self, symbols: &StringPool, name: &'static str) -> Option<SharedString>;
 }
 
 impl<'a, 'input: 'a> NodeExt<'a, 'input> for Node<'a, 'input> {
     fn child(self, name: &'static str) -> Result<Node<'a, 'input>, Error> {
         self.children()
             .find(by_name(name))
-            .ok_or_else(|| Error::ParseError(format!("missing child node: {}", name)))
+            .ok_or_else(|| Error::ParseError(format!("missing child node: {}", name).into()))
     }
 
     fn att<T: std::str::FromStr>(&self, name: &'static str) -> Result<T, Error>
     where
         T::Err: Debug,
     {
-        let v = self
-            .attribute(name)
-            .ok_or_else(|| Error::ParseError(format!("missing required attribute: {}", name)))?;
+        let v = self.attribute(name).ok_or_else(|| {
+            Error::ParseError(format!("missing required attribute: {}", name).into())
+        })?;
 
-        v.parse::<T>()
-            .map_err(|_| Error::ParseError(format!("cannot parse attribute value: {}={}", name, v)))
+        v.parse::<T>().map_err(|_| {
+            Error::ParseError(format!("cannot parse attribute value: {}={}", name, v).into())
+        })
     }
 
     fn att_opt<T: std::str::FromStr>(&self, name: &'static str) -> Result<Option<T>, Error>
@@ -58,9 +65,23 @@ impl<'a, 'input: 'a> NodeExt<'a, 'input> for Node<'a, 'input> {
         self.attribute(name)
             .map(|v| {
                 v.parse::<T>().map_err(|_| {
-                    Error::ParseError(format!("cannot parse attribute value: {}={}", name, v))
+                    Error::ParseError(
+                        format!("cannot parse attribute value: {}={}", name, v).into(),
+                    )
                 })
             })
             .transpose()
+    }
+
+    fn intern(&self, symbols: &StringPool, name: &'static str) -> Result<SharedString, Error> {
+        let v = self.attribute(name).ok_or_else(|| {
+            Error::ParseError(format!("missing required attribute: {}", name).into())
+        })?;
+
+        Ok(symbols.get(v))
+    }
+
+    fn intern_opt(&self, symbols: &StringPool, name: &'static str) -> Option<SharedString> {
+        self.attribute(name).map(|v| symbols.get(v))
     }
 }

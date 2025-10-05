@@ -9,8 +9,10 @@
 
 use std::{collections::HashMap, fmt::Debug, sync::Arc};
 
+use interner::shared::StringPool;
 use roxmltree::{Document, Node};
 
+use super::SharedString;
 use crate::project::{
     dpt::DPT,
     error::Error,
@@ -20,11 +22,11 @@ use crate::project::{
 #[derive(Debug, Clone)]
 #[allow(dead_code)]
 pub struct DatapointType {
-    pub id: String,
+    pub id: SharedString,
     pub dpt: DPT,
 
-    pub name: String,
-    pub text: Option<String>,
+    pub name: SharedString,
+    pub text: Option<SharedString>,
 
     pub size: u16,
 
@@ -34,62 +36,62 @@ pub struct DatapointType {
 #[derive(Debug, Clone)]
 #[allow(dead_code)]
 pub struct DatapointSubtype {
-    pub id: String,
+    pub id: SharedString,
     pub dpt: DPT,
     pub size: u16,
 
-    pub name: String,
-    pub text: Option<String>,
+    pub name: SharedString,
+    pub text: Option<SharedString>,
 
     pub formats: Vec<Format>,
-    pub default: Option<String>,
+    pub default: Option<SharedString>,
 }
 
 #[derive(Debug, Clone)]
 #[allow(dead_code)]
 pub struct EnumerationValue {
-    pub id: String,
+    pub id: SharedString,
     pub value: u8,
-    pub text: String,
+    pub text: SharedString,
 }
 
 #[derive(Debug, Clone)]
 #[allow(dead_code)]
 pub enum Format {
     Bit {
-        name: Option<String>,
-        cleared: String,
-        set: String,
+        name: Option<SharedString>,
+        cleared: SharedString,
+        set: SharedString,
     },
 
     Integer {
-        name: Option<String>,
+        name: Option<SharedString>,
         width: u8,
         signed: bool,
         min_inclusive: Option<i64>,
         max_inclusive: Option<i64>,
         coefficient: Option<f64>,
-        unit: Option<String>,
+        unit: Option<SharedString>,
     },
 
     Float {
-        name: Option<String>,
+        name: Option<SharedString>,
         width: u8,
         min_value: Option<f64>,
         max_value: Option<f64>,
-        unit: Option<String>,
+        unit: Option<SharedString>,
     },
 
     String {
-        name: Option<String>,
-        encoding: String,
+        name: Option<SharedString>,
+        encoding: SharedString,
         width: u16,
         variable_length: bool,
         null_terminated: bool,
     },
 
     Enumeration {
-        name: Option<String>,
+        name: Option<SharedString>,
         width: u8,
         values: Vec<EnumerationValue>,
     },
@@ -98,74 +100,80 @@ pub enum Format {
         width: u8,
     },
 
-    Reference(String),
+    Reference(SharedString),
 }
 
 impl Format {
-    pub fn unit(&self) -> Option<&String> {
+    pub fn unit(&self) -> Option<SharedString> {
         match self {
-            Format::Integer { unit, .. } => unit.as_ref(),
-            Format::Float { unit, .. } => unit.as_ref(),
+            Format::Integer { unit, .. } => unit.clone(),
+            Format::Float { unit, .. } => unit.clone(),
             _ => None,
         }
     }
 }
 
-fn parse_format(f: Node) -> Result<(Option<String>, Format), Error> {
+fn parse_format(f: Node, symbols: &StringPool) -> Result<(Option<SharedString>, Format), Error> {
     let ftype = f.tag_name().name();
+
+    fn id(f: Node, symbols: &StringPool) -> Result<SharedString, Error> {
+        Ok(f.intern(symbols, "Id")?)
+    }
 
     match ftype {
         "Bit" => Ok((
-            Some(f.att("Id")?),
+            Some(id(f, symbols)?),
             Format::Bit {
-                name: f.att_opt("Name")?,
-                cleared: f.att("Cleared")?,
-                set: f.att("Set")?,
+                name: f.intern_opt(symbols, "Name"),
+
+                cleared: f.intern(symbols, "Cleared")?,
+
+                set: f.intern(symbols, "Set")?,
             },
         )),
 
         "UnsignedInteger" => Ok((
-            Some(f.att("Id")?),
+            Some(id(f, symbols)?),
             Format::Integer {
-                name: f.att_opt("Name")?,
+                name: f.intern_opt(symbols, "Name"),
                 width: f.att("Width")?,
                 signed: false,
                 min_inclusive: f.att_opt("MinInclusive")?,
                 max_inclusive: f.att_opt("MaxInclusive")?,
                 coefficient: f.att_opt("Coefficient")?,
-                unit: f.att_opt("Unit")?,
+                unit: f.intern_opt(symbols, "Unit"),
             },
         )),
 
         "SignedInteger" => Ok((
-            Some(f.att("Id")?),
+            Some(id(f, symbols)?),
             Format::Integer {
-                name: f.att_opt("Name")?,
+                name: f.intern_opt(symbols, "Name"),
                 width: f.att("Width")?,
                 signed: true,
                 min_inclusive: f.att_opt("MinInclusive")?,
                 max_inclusive: f.att_opt("MaxInclusive")?,
                 coefficient: f.att_opt("Coefficient")?,
-                unit: f.att_opt("Unit")?,
+                unit: f.intern_opt(symbols, "Unit"),
             },
         )),
 
         "Float" => Ok((
-            Some(f.att("Id")?),
+            Some(id(f, symbols)?),
             Format::Float {
-                name: f.att_opt("Name")?,
+                name: f.intern_opt(symbols, "Name"),
                 width: f.att("Width")?,
                 min_value: f.att_opt("MinValue")?,
                 max_value: f.att_opt("MaxValue")?,
-                unit: f.att_opt("Unit")?,
+                unit: f.intern_opt(symbols, "Unit"),
             },
         )),
 
         "String" => Ok((
-            Some(f.att("Id")?),
+            Some(id(f, symbols)?),
             Format::String {
-                name: f.att_opt("Name")?,
-                encoding: f.att("Encoding")?,
+                name: f.intern_opt(symbols, "Name"),
+                encoding: f.intern(symbols, "Encoding")?,
                 width: f.att("Width")?,
                 variable_length: f.att_opt("VariableLength")?.unwrap_or(false),
                 null_terminated: f.att_opt("NullTerminated")?.unwrap_or(false),
@@ -173,18 +181,18 @@ fn parse_format(f: Node) -> Result<(Option<String>, Format), Error> {
         )),
 
         "Enumeration" => Ok((
-            Some(f.att("Id")?),
+            Some(id(f, symbols)?),
             Format::Enumeration {
-                name: f.att_opt("Name")?,
+                name: f.intern_opt(symbols, "Name"),
                 width: f.att("Width")?,
                 values: {
                     let mut values = Vec::new();
 
                     for v in f.children().filter(by_name("EnumValue")) {
                         values.push(EnumerationValue {
-                            id: v.att("Id")?,
+                            id: v.intern(symbols, "Id")?,
                             value: v.att("Value")?,
-                            text: v.att("Text")?,
+                            text: v.intern(symbols, "Text")?,
                         })
                     }
 
@@ -200,12 +208,11 @@ fn parse_format(f: Node) -> Result<(Option<String>, Format), Error> {
             },
         )),
 
-        "RefType" => Ok((None, Format::Reference(f.att("RefId")?))),
+        "RefType" => Ok((None, Format::Reference(f.intern(symbols, "RefId")?))),
 
-        unexpected => Err(Error::ParseError(format!(
-            "unexpected format: {}",
-            unexpected
-        ))),
+        unexpected => Err(Error::ParseError(
+            format!("unexpected format: {}", unexpected).into(),
+        )),
     }
 }
 #[derive(Debug, Clone)]
@@ -214,12 +221,13 @@ pub struct MasterData {
     pub version: String,
     pub types: Vec<DatapointType>,
     pub subtypes: Vec<Arc<DatapointSubtype>>,
-    pub by_id: HashMap<String, usize>,
+    pub by_id: HashMap<SharedString, usize>,
     pub by_dpt: HashMap<DPT, usize>,
+    symbols: Arc<StringPool>,
 }
 
 impl MasterData {
-    pub fn parse(document: &Document) -> Result<MasterData, Error> {
+    pub fn parse(document: &Document, symbols: Arc<StringPool>) -> Result<MasterData, Error> {
         let masterdata = document.root().child("KNX")?.child("MasterData")?;
         let version = masterdata.att::<String>("Version")?;
 
@@ -233,10 +241,10 @@ impl MasterData {
             .filter(by_name("DatapointType"))
         {
             let mut datapoint_type = DatapointType {
-                id: type_node.att("Id")?,
+                id: type_node.intern(&symbols, "Id")?,
                 dpt: DPT::new(type_node.att("Number")?, None),
-                name: type_node.att("Name")?,
-                text: type_node.att_opt("Text")?,
+                name: type_node.intern(&symbols, "Name")?,
+                text: type_node.intern_opt(&symbols, "Text"),
                 size: type_node.att("SizeInBit")?,
                 subtypes: Vec::new(),
             };
@@ -255,7 +263,7 @@ impl MasterData {
                     .children()
                     .filter(Node::is_element)
                 {
-                    let (id, mut format) = parse_format(format_node)?;
+                    let (id, mut format) = parse_format(format_node, &symbols)?;
 
                     if let Some(id) = &id {
                         if !formats_map.contains_key(id) {
@@ -267,7 +275,9 @@ impl MasterData {
                         format = formats_map
                             .get(&id)
                             .ok_or_else(|| {
-                                Error::ParseError(format!("undefined format reference: {}", id))
+                                Error::ParseError(
+                                    format!("undefined format reference: {}", id).into(),
+                                )
                             })?
                             .clone();
                     }
@@ -280,13 +290,12 @@ impl MasterData {
                 }
 
                 let subtype = Arc::new(DatapointSubtype {
-                    //datapoint_type: datapoint_type.clone(),
-                    id: subtype_node.att("Id")?,
+                    id: subtype_node.intern(&symbols, "Id")?,
                     dpt: DPT::new(datapoint_type.dpt.main, Some(subtype_node.att("Number")?)),
                     size: datapoint_type.size,
-                    name: subtype_node.att("Name")?,
-                    text: subtype_node.att_opt("Text")?,
-                    default: subtype_node.att_opt("Default")?,
+                    name: subtype_node.intern(&symbols, "Name")?,
+                    text: subtype_node.intern_opt(&symbols, "Text"),
+                    default: subtype_node.intern_opt(&symbols, "Default"),
                     formats,
                 });
 
@@ -295,13 +304,12 @@ impl MasterData {
             }
 
             let generic = Arc::new(DatapointSubtype {
-                // datapoint_type: datapoint_type.clone(),
                 id: datapoint_type.id.clone(),
                 dpt: DPT::new(datapoint_type.dpt.main, None),
                 size: datapoint_type.size,
                 name: datapoint_type.name.clone(),
                 text: datapoint_type.text.clone(),
-                default: type_node.att_opt("Default")?,
+                default: type_node.intern_opt(&symbols, "Default"),
                 formats: type_formats.unwrap(),
             });
 
@@ -324,11 +332,13 @@ impl MasterData {
             subtypes,
             by_id,
             by_dpt,
+            symbols,
         })
     }
 
     pub fn by_id(&self, id: &str) -> Option<&Arc<DatapointSubtype>> {
-        self.by_id.get(id).map(|ix| &self.subtypes[*ix])
+        let id = self.symbols.get(id);
+        self.by_id.get(&id).map(|ix| &self.subtypes[*ix])
     }
 
     pub fn by_dpt(&self, dpt: DPT) -> Option<&Arc<DatapointSubtype>> {

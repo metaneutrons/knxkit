@@ -12,6 +12,7 @@ use std::path::Path;
 use anyhow::Result;
 use prettyplease as pp;
 use proc_macro2::TokenStream;
+use quote::quote;
 
 use knxkit::project::MasterData;
 
@@ -38,4 +39,14 @@ pub fn generate(master: &MasterData, destination: &Path) -> Result<()> {
     write(&destination.join("typeinfo.rs"), typeinfo::generate(master))?;
 
     Ok(())
+}
+
+pub fn codec(codec: &knxkit::project::SharedString) -> TokenStream {
+    match &**codec.to_owned() {
+        "iso-8859-1" => quote!(ISO_8859_1),
+        "utf-8" => quote!(UTF_8),
+        "us-ascii" => quote!(ASCII),
+
+        _ => panic!("unsupported encoding: {}", codec),
+    }
 }

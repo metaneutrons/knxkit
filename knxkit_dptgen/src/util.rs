@@ -48,23 +48,32 @@ pub fn format_name(
     name_map: &mut HashMap<String, u8>,
 ) -> Ident {
     let name = if subtype.formats.len() == 1 {
-        subtype.text.to_owned()
+        subtype.text.as_ref().map(|s| s.to_string())
     } else {
         None
     }
     .unwrap_or_else(|| match format {
-        Format::Bit { name, set, .. } => name.to_owned().unwrap_or_else(|| {
-            if set != "True" {
-                set.to_string()
-            } else {
-                "bit".to_string()
-            }
-        }),
-        Format::Enumeration { name, .. } => {
-            name.to_owned().unwrap_or_else(|| "enumeration".to_string())
+        Format::Bit { name, set, .. } => {
+            name.as_ref().map(|s| s.to_string()).unwrap_or_else(|| {
+                if set != "True" {
+                    set.to_string()
+                } else {
+                    "bit".to_string()
+                }
+            })
         }
-        Format::Integer { name, .. } => name.to_owned().unwrap_or_else(|| "int".to_string()),
-        Format::Float { name, .. } => name.to_owned().unwrap_or_else(|| "float".to_string()),
+        Format::Enumeration { name, .. } => name
+            .as_ref()
+            .map(|s| s.to_string())
+            .unwrap_or_else(|| "enumeration".to_string()),
+        Format::Integer { name, .. } => name
+            .as_ref()
+            .map(|s| s.to_string())
+            .unwrap_or_else(|| "int".to_string()),
+        Format::Float { name, .. } => name
+            .as_ref()
+            .map(|s| s.to_string())
+            .unwrap_or_else(|| "float".to_string()),
         Format::Reserved { .. } => "reserved".to_string(),
         Format::String { .. } => "string".to_string(),
         Format::Reference(_) => {

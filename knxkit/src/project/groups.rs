@@ -9,7 +9,9 @@
 
 use std::borrow::Borrow;
 use std::collections::HashMap;
+use std::sync::Arc;
 
+use interner::shared::StringPool;
 use roxmltree::Document;
 
 use crate::core::address::GroupAddress;
@@ -17,12 +19,12 @@ use crate::project::dpt::DPT;
 use crate::project::error::Error;
 use crate::project::util::{by_name, NodeExt};
 
-use super::MasterData;
+use super::{MasterData, SharedString};
 
 #[derive(Clone, Debug)]
 pub struct Group {
     pub path: Vec<String>,
-    pub name: String,
+    pub name: SharedString,
     pub address: GroupAddress,
     pub dpt: Option<DPT>,
 }
@@ -30,22 +32,29 @@ pub struct Group {
 #[derive(Clone, Debug)]
 pub struct Groups {
     pub groups: Vec<Group>,
-    pub by_name: HashMap<String, usize>,
+    pub by_name: HashMap<SharedString, usize>,
     pub by_address: HashMap<GroupAddress, usize>,
+    symbols: Arc<StringPool>,
 }
 
 impl Groups {
-    pub fn parse(document: &Document, master: &MasterData) -> Result<Groups, Error> {
+    pub fn parse(
+        document: &Document,
+        master: &MasterData,
+        symbols: Arc<StringPool>,
+    ) -> Result<Groups, Error> {
         let mut groups = Vec::new();
 
         for group_node in document.descendants().filter(by_name("GroupAddress")) {
             let address = GroupAddress::new(group_node.att("Address")?);
-            let name = group_node.att("Name")?;
+
+            let name = group_node.intern(&symbols, "Name")?;
+
             let dpt = group_node
                 .att_opt::<String>("DatapointType")?
                 .map(|s| {
                     master.by_id(&s).map(|x| x.dpt).ok_or_else(|| {
-                        Error::ParseError(format!("Unexpected DPT reference: {}", s))
+                        Error::ParseError(format!("Unexpected DPT reference: {}", s).into())
                     })
                 })
                 .transpose()?;
@@ -90,11 +99,13 @@ impl Groups {
             groups,
             by_name,
             by_address,
+            symbols,
         })
     }
 
     pub fn by_name(&self, name: &str) -> Option<&Group> {
-        self.by_name.get(name).map(|ix| &self.groups[*ix])
+        let name = self.symbols.get(name);
+        self.by_name.get(&name).map(|ix| &self.groups[*ix])
     }
 
     pub fn by_address(&self, address: impl Borrow<GroupAddress>) -> Option<&Group> {

@@ -19,4 +19,6 @@ mod util;
 pub use dpt::DPT;
 pub use master::{DatapointSubtype, DatapointType, Format, MasterData};
 pub use project::Project;
-pub use project_ext::{CowString, ProjectExt};
+pub use project_ext::ProjectExt;
+
+pub use interner::shared::SharedString;

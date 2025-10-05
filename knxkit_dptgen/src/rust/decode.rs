@@ -44,7 +44,7 @@ fn decode_format(format: &Format) -> TokenStream {
             encoding,
             variable_length: false,
             ..
-        } => match encoding.as_str() {
+        } => match &**encoding.to_owned() {
             "us-ascii" => quote! {
                 reader.read_to::<u8>()? as char
             },
@@ -64,11 +64,7 @@ fn decode_format(format: &Format) -> TokenStream {
             variable_length: false,
             ..
         } => {
-            let codec = match encoding.as_str() {
-                "iso-8859-1" => quote!(ISO_8859_1),
-                "us-ascii" => quote!(ASCII),
-                _ => panic!("unsupported encoding: {}", encoding),
-            };
+            let codec = super::codec(encoding);
 
             quote!({
                 let mut value = [0u8; (#width / 8) as usize];
@@ -82,12 +78,7 @@ fn decode_format(format: &Format) -> TokenStream {
             variable_length: true,
             ..
         } => {
-            let codec = match encoding.as_str() {
-                "iso-8859-1" => quote!(ISO_8859_1),
-                "utf-8" => quote!(UTF_8),
-
-                _ => panic!("unsupported encoding: {}", encoding),
-            };
+            let codec = super::codec(encoding);
 
             quote!({
                 let mut buffer = [0u8; 2048];
