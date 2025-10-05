@@ -15,7 +15,7 @@ use syn::Ident;
 
 use knxkit::project::{DatapointSubtype, Format};
 
-fn integer_type(width: u8, signed: bool) -> TokenStream {
+pub fn integer_type(width: u8, signed: bool) -> TokenStream {
     match (width, signed) {
         (32, false) => quote!(u32),
         (16, false) => quote!(u16),
@@ -130,7 +130,9 @@ fn impl_display(sname: &Ident, subtype: &DatapointSubtype) -> TokenStream {
     }
 }
 
-fn subtype(subtype: &DatapointSubtype) -> TokenStream {
+fn subtype(subtype: impl AsRef<DatapointSubtype>) -> TokenStream {
+    let subtype = subtype.as_ref();
+
     let struct_name = crate::util::subtype_name(subtype);
 
     let struct_decl = match subtype.formats.as_slice() {

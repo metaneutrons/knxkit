@@ -27,15 +27,16 @@ pub struct DatapointType {
     pub text: Option<String>,
 
     pub size: u16,
+
+    pub subtypes: Vec<Arc<DatapointSubtype>>,
 }
 
 #[derive(Debug, Clone)]
 #[allow(dead_code)]
 pub struct DatapointSubtype {
-    pub datapoint_type: Arc<DatapointType>,
-
     pub id: String,
     pub dpt: DPT,
+    pub size: u16,
 
     pub name: String,
     pub text: Option<String>,
@@ -80,6 +81,7 @@ pub enum Format {
     },
 
     String {
+        name: Option<String>,
         encoding: String,
         width: u16,
         variable_length: bool,
@@ -162,6 +164,7 @@ fn parse_format(f: Node) -> Result<(Option<String>, Format), Error> {
         "String" => Ok((
             Some(f.att("Id")?),
             Format::String {
+                name: f.att_opt("Name")?,
                 encoding: f.att("Encoding")?,
                 width: f.att("Width")?,
                 variable_length: f.att_opt("VariableLength")?.unwrap_or(false),
@@ -209,7 +212,8 @@ fn parse_format(f: Node) -> Result<(Option<String>, Format), Error> {
 #[allow(dead_code)]
 pub struct MasterData {
     pub version: String,
-    pub subtypes: Vec<DatapointSubtype>,
+    pub types: Vec<DatapointType>,
+    pub subtypes: Vec<Arc<DatapointSubtype>>,
     pub by_id: HashMap<String, usize>,
     pub by_dpt: HashMap<DPT, usize>,
 }
@@ -219,6 +223,7 @@ impl MasterData {
         let masterdata = document.root().child("KNX")?.child("MasterData")?;
         let version = masterdata.att::<String>("Version")?;
 
+        let mut types = Vec::new();
         let mut subtypes = Vec::new();
         let mut formats_map = HashMap::new();
 
@@ -227,13 +232,14 @@ impl MasterData {
             .children()
             .filter(by_name("DatapointType"))
         {
-            let datapoint_type = Arc::new(DatapointType {
+            let mut datapoint_type = DatapointType {
                 id: type_node.att("Id")?,
                 dpt: DPT::new(type_node.att("Number")?, None),
                 name: type_node.att("Name")?,
                 text: type_node.att_opt("Text")?,
                 size: type_node.att("SizeInBit")?,
-            });
+                subtypes: Vec::new(),
+            };
 
             let mut type_formats = None;
 
@@ -273,31 +279,35 @@ impl MasterData {
                     type_formats = Some(formats.clone());
                 }
 
-                let subtype = DatapointSubtype {
-                    datapoint_type: datapoint_type.clone(),
+                let subtype = Arc::new(DatapointSubtype {
+                    //datapoint_type: datapoint_type.clone(),
                     id: subtype_node.att("Id")?,
                     dpt: DPT::new(datapoint_type.dpt.main, Some(subtype_node.att("Number")?)),
-
+                    size: datapoint_type.size,
                     name: subtype_node.att("Name")?,
                     text: subtype_node.att_opt("Text")?,
                     default: subtype_node.att_opt("Default")?,
                     formats,
-                };
+                });
 
-                subtypes.push(subtype);
+                subtypes.push(subtype.clone());
+                datapoint_type.subtypes.push(subtype);
             }
 
-            let generic = DatapointSubtype {
-                datapoint_type: datapoint_type.clone(),
+            let generic = Arc::new(DatapointSubtype {
+                // datapoint_type: datapoint_type.clone(),
                 id: datapoint_type.id.clone(),
                 dpt: DPT::new(datapoint_type.dpt.main, None),
+                size: datapoint_type.size,
                 name: datapoint_type.name.clone(),
                 text: datapoint_type.text.clone(),
                 default: type_node.att_opt("Default")?,
                 formats: type_formats.unwrap(),
-            };
+            });
 
             subtypes.push(generic);
+
+            types.push(datapoint_type);
         }
 
         let mut by_id = HashMap::new();
@@ -310,17 +320,18 @@ impl MasterData {
 
         Ok(MasterData {
             version,
+            types,
             subtypes,
             by_id,
             by_dpt,
         })
     }
 
-    pub fn by_id(&self, id: &str) -> Option<&DatapointSubtype> {
+    pub fn by_id(&self, id: &str) -> Option<&Arc<DatapointSubtype>> {
         self.by_id.get(id).map(|ix| &self.subtypes[*ix])
     }
 
-    pub fn by_dpt(&self, dpt: DPT) -> Option<&DatapointSubtype> {
+    pub fn by_dpt(&self, dpt: DPT) -> Option<&Arc<DatapointSubtype>> {
         self.by_dpt.get(&dpt).map(|ix| &self.subtypes[*ix])
     }
 }

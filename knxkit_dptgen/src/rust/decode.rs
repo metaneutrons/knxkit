@@ -123,7 +123,7 @@ pub fn decode(
     arg_name: &syn::Ident,
     subtype: &DatapointSubtype,
 ) -> TokenStream {
-    let size_in_bit = subtype.datapoint_type.size;
+    let size_in_bit = subtype.size;
 
     let decode = match subtype.formats.as_slice() {
         [single] => {

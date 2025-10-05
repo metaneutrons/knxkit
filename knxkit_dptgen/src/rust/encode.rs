@@ -122,7 +122,7 @@ fn encode_format(writer: &Ident, value: &TokenStream, format: &Format) -> TokenS
 }
 
 pub fn encode(subtype: &DatapointSubtype) -> TokenStream {
-    let size_in_bit = subtype.datapoint_type.size;
+    let size_in_bit = subtype.size;
 
     let writer = quote::format_ident!("writer");
 

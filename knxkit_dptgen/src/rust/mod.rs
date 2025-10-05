@@ -18,7 +18,7 @@ use knxkit::project::MasterData;
 mod decode;
 mod encode;
 mod generic;
-mod specific;
+pub mod specific;
 mod typeinfo;
 
 fn write(path: &Path, content: TokenStream) -> Result<()> {
