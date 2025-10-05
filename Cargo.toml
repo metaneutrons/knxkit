@@ -1,3 +1,6 @@
 [workspace]
 resolver = "2"
 members = ["knxkit", "knxkit_cli", "knxkit_dptgen", "knxkit_dpt"]
+
+[workspace.package]
+rust-version = "1.88.0"
