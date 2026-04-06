@@ -28,11 +28,11 @@ pub use remote::{connect, parse_remote, RemoteSpec};
 /// Trait for KNX bus connections (tunneling, routing, etc.).
 pub trait KnxBusConnection {
     /// Send a CEMI frame to the bus, returning a notify handle for acknowledgement.
-    fn send(&self, cemi: CEMI) -> impl Future<Output = Result<Arc<Notify>, Error>>;
+    fn send(&self, cemi: CEMI) -> impl Future<Output = Result<Arc<Notify>, Error>> + Send;
     /// Receive the next incoming CEMI frame, or `None` if the connection is closed.
-    fn recv(&mut self) -> impl Future<Output = Option<Arc<CEMI>>>;
+    fn recv(&mut self) -> impl Future<Output = Option<Arc<CEMI>>> + Send;
     /// Gracefully shut down the connection.
-    fn terminate(self) -> impl Future<Output = ()>;
+    fn terminate(self) -> impl Future<Output = ()> + Send;
     /// Return the individual address assigned to this connection.
     fn address(&self) -> IndividualAddress;
 }
