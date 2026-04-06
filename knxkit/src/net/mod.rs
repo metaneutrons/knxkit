@@ -15,5 +15,7 @@ pub mod endpoint_udp;
 pub mod frames;
 /// KNX/IP device search via multicast.
 pub mod search;
+/// KNX/IP multicast routing connection.
+pub mod router;
 /// KNX/IP tunneling (point-to-point) connection.
 pub mod tunnel;

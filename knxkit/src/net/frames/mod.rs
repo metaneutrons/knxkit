@@ -33,6 +33,8 @@ pub enum ServiceType {
 
     TunnelingRequest = 0x0420,
     TunnelingACK = 0x0421,
+
+    RoutingIndication = 0x0530,
 }
 
 #[derive(Debug)]
