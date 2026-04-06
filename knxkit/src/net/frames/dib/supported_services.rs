@@ -10,16 +10,23 @@
 use crate::core::util::prelude::*;
 
 // 3/8/2-7.5.4.3
+/// KNXnet/IP service family identifier (3/8/2-7.5.4.3).
 #[derive(PartialEq, Debug, Clone, FromPrimitive, ToPrimitive)]
 pub enum ServiceFamily {
+    /// Core services.
     Core = 0x02,
+    /// Device management.
     DeviceManagement = 0x03,
+    /// Tunneling.
     Tunneling = 0x04,
+    /// Routing.
     Routing = 0x05,
+    /// Remote diagnostics and configuration.
     RemoteDiagAndConfig = 0x07,
 }
 
 // 3/8/2-7.5.4.3
+/// Supported service family entry (3/8/2-7.5.4.3).
 #[derive(PartialEq, Debug, Clone)]
 pub struct ServiceEntry {
     family: ServiceFamily,
@@ -27,12 +34,14 @@ pub struct ServiceEntry {
 }
 
 impl ServiceEntry {
+    /// Parses a single service entry from wire format.
     pub fn parse(input: Input) -> Result<Self> {
         let (input, (family, version)) = (parse_enum(8), parse_u8).parse(input)?;
 
         Ok((input, ServiceEntry { family, version }))
     }
 
+    /// Parses a supported service families DIB from wire format.
     pub fn parse_many(input0: Input) -> Result<Vec<Self>> {
         use super::DescriptionType;
 

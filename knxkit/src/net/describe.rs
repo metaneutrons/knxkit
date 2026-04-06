@@ -20,6 +20,7 @@ use crate::{
     },
 };
 
+/// Send a description request to a KNX/IP device and return its response.
 pub fn describe(
     local: Ipv4Addr,
     peer: SocketAddrV4,
@@ -27,6 +28,7 @@ pub fn describe(
     describe_ext(local, peer, false)
 }
 
+/// Send a description request with NAT mode control.
 pub async fn describe_ext(
     local: Ipv4Addr,
     peer: SocketAddrV4,

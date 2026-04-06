@@ -7,11 +7,16 @@
 //
 // SPDX-License-Identifier: EPL-2.0 OR GPL-3.0
 
+/// KNX individual and group address types.
 pub mod address;
+/// Application Protocol Data Unit (APDU) encoding and decoding.
 pub mod apdu;
+/// Common External Message Interface (CEMI) frame handling.
 pub mod cemi;
 mod datapoint;
+/// Network Protocol Data Unit (NPDU) encoding and decoding.
 pub mod npdu;
+/// Transport Protocol Data Unit (TPDU) encoding and decoding.
 pub mod tpdu;
 pub(crate) mod util;
 

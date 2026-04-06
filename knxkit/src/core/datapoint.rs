@@ -9,9 +9,12 @@
 
 use std::str::FromStr;
 
+/// KNX datapoint value, either short (6-bit) or long (byte array).
 #[derive(Debug, Clone, PartialEq)]
 pub enum DataPoint {
+    /// Short datapoint encoded in the lower 6 bits of the APDU octet.
     Short(u8),
+    /// Long datapoint encoded as a byte array.
     Long(Vec<u8>),
 }
 

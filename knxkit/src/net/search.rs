@@ -22,6 +22,7 @@ use crate::{
     },
 };
 
+/// Send a KNX/IP search request and return a stream of discovered devices.
 pub async fn search(
     local: Ipv4Addr,
     nat: bool,

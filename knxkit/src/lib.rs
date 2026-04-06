@@ -7,10 +7,16 @@
 //
 // SPDX-License-Identifier: EPL-2.0 OR GPL-3.0
 
+//! KNX home automation protocol library.
+
+/// KNXnet/IP tunneling connection management.
 pub mod connection;
+/// Core KNX protocol types and data structures.
 pub mod core;
 mod error;
+/// KNXnet/IP network protocol frames and services.
 pub mod net;
+/// ETS project file import and processing.
 pub mod project;
 
 pub use error::Error;

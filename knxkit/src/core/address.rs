@@ -21,36 +21,43 @@ use nom::{
 
 use crate::core::util::prelude::*;
 
+/// KNX individual address in area.line.device format.
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
 pub struct IndividualAddress(u16);
 
 impl IndividualAddress {
+    /// Creates an individual address from a raw 16-bit value.
     pub fn new(a: u16) -> Self {
         Self(a)
     }
 
     // 0.0.0
+    /// Returns the zero address (0.0.0).
     pub fn new_zero() -> Self {
         Self(0)
     }
 
+    /// Creates an individual address from (area, line, device) components.
     pub fn from_components((area, line, device): (u8, u8, u8)) -> Self {
         let a = (area as u16) << 12 | (line as u16 & 0x0f) << 8 | device as u16;
         Self(a)
     }
 
+    /// Returns the raw 16-bit representation.
     pub fn as_u16(&self) -> u16 {
         self.0
     }
 }
 
 impl IndividualAddress {
+    /// Parses an individual address from binary input.
     pub fn parse(input: Input) -> Result<Self> {
         let (input, address) = parse_u16(input)?;
 
         Ok((input, IndividualAddress(address)))
     }
 
+    /// Serializes this individual address to binary.
     pub fn gen<W: std::io::Write>(&self) -> impl cookie_factory::SerializeFn<W> {
         gen_u16(self.0)
     }
@@ -108,30 +115,36 @@ impl Debug for IndividualAddress {
     }
 }
 
+/// KNX group address in main/middle/sub format.
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
 pub struct GroupAddress(u16);
 
 impl GroupAddress {
+    /// Creates a group address from a raw 16-bit value.
     pub fn new(a: u16) -> Self {
         Self(a)
     }
 
+    /// Creates a group address from (main, middle, sub) components.
     pub fn from_components((main, middle, sub): (u8, u8, u8)) -> Self {
         Self((main as u16) << 11 | (middle as u16 & 0x07) << 8 | sub as u16)
     }
 
+    /// Returns the raw 16-bit representation.
     pub fn as_u16(&self) -> u16 {
         self.0
     }
 }
 
 impl GroupAddress {
+    /// Parses a group address from binary input.
     pub fn parse(input: Input) -> Result<Self> {
         let (input, address) = parse_u16(input)?;
 
         Ok((input, GroupAddress(address)))
     }
 
+    /// Serializes this group address to binary.
     pub fn gen<W: std::io::Write>(&self) -> impl cookie_factory::SerializeFn<W> {
         gen_u16(self.0)
     }
@@ -181,20 +194,28 @@ impl Debug for GroupAddress {
     }
 }
 
+/// KNX communication domain type.
 #[derive(Clone, PartialEq)]
 pub enum Domain {
+    /// Sent to all devices on the bus.
     Broadcast,
+    /// Sent to a group of devices.
     Multicast,
+    /// Sent to a single device.
     Unicast,
 }
 
+/// Target address of a KNX telegram, either individual or group.
 #[derive(Clone, Debug, Copy, PartialEq)]
 pub enum DestinationAddress {
+    /// Point-to-point individual device address.
     Individual(IndividualAddress),
+    /// Multicast group address.
     Group(GroupAddress),
 }
 
 impl DestinationAddress {
+    /// Returns the raw 16-bit representation.
     pub fn as_u16(&self) -> u16 {
         match self {
             DestinationAddress::Individual(i) => i.as_u16(),
@@ -202,6 +223,7 @@ impl DestinationAddress {
         }
     }
 
+    /// Returns the communication domain for this address.
     pub fn domain(&self) -> Domain {
         match self {
             Self::Group(GroupAddress(0)) => Domain::Broadcast,
@@ -210,14 +232,17 @@ impl DestinationAddress {
         }
     }
 
+    /// Returns `true` if this is a group address.
     pub fn is_group(&self) -> bool {
         matches!(self, Self::Group(_))
     }
 
+    /// Returns `true` if this is an individual address.
     pub fn is_individual(&self) -> bool {
         matches!(self, Self::Individual(_))
     }
 
+    /// Returns a reference to the inner group address, panics if individual.
     pub fn as_group(&self) -> &GroupAddress {
         if let Self::Group(g) = self {
             g
@@ -226,6 +251,7 @@ impl DestinationAddress {
         }
     }
 
+    /// Returns a reference to the inner individual address, panics if group.
     pub fn as_individual(&self) -> &IndividualAddress {
         if let Self::Individual(i) = self {
             i

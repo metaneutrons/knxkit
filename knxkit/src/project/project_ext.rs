@@ -15,9 +15,13 @@ use crate::{
     project::Project,
 };
 
+/// Extension trait for looking up device names, group names, and DPTs from a project.
 pub trait ProjectExt {
+    /// Returns the device name for the given individual address.
     fn device_name(&self, address: impl Borrow<IndividualAddress>) -> Option<SharedString>;
+    /// Returns the group name for the given group address.
     fn group(&self, address: impl Borrow<GroupAddress>) -> Option<SharedString>;
+    /// Returns the DPT assigned to the given group address.
     fn group_dpt(&self, address: GroupAddress) -> Option<DPT>;
     //    fn decode_hex(&self, address: GroupAddress, hex: &str) -> Result<DataPoint, Error>;
 }

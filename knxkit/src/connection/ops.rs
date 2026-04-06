@@ -24,15 +24,19 @@ use crate::{
     error::Error,
 };
 
+/// Extension trait for KNX group address read/write operations.
 pub trait GroupOps {
+    /// Send a group value read request to the given group address.
     fn group_request(&mut self, group: GroupAddress) -> impl Future<Output = Result<(), Error>>;
 
+    /// Read a data point from a group address, waiting up to `timeout` for a response.
     fn group_read(
         &mut self,
         group: GroupAddress,
         timeout: Duration,
     ) -> impl Future<Output = Result<DataPoint, Error>>;
 
+    /// Write a data point to a group address, returning a notify handle for acknowledgement.
     fn group_write(
         &mut self,
         group: GroupAddress,
@@ -108,7 +112,9 @@ impl<T: KnxBusConnection> GroupOps for T {
     }
 }
 
+/// Extension trait for filtering incoming CEMI frames with a timeout.
 pub trait FishOps {
+    /// Wait for a CEMI frame matching predicate `p`, returning `None` on timeout.
     fn fish_for<T, P: Fn(&CEMI) -> Option<T> + Send>(
         &mut self,
         timeout: std::time::Duration,

@@ -13,13 +13,17 @@ use super::DescriptionType;
 use crate::core::{address::IndividualAddress, util::prelude::*};
 
 // 3/8/2-7.5.4.6
+/// KNX addresses DIB (3/8/2-7.5.4.6).
 #[derive(Clone, Debug)]
 pub struct KNXAddresses {
+    /// Primary individual address.
     pub address: IndividualAddress,
+    /// Additional individual addresses.
     pub additional: Vec<IndividualAddress>,
 }
 
 impl KNXAddresses {
+    /// Parses a KNX addresses DIB from wire format.
     pub fn parse(input: Input) -> Result<Self> {
         let (input, length) = parse_u8(input)?;
         let (input, _) = parse_token(DescriptionType::KNXAddresses.to_u8().unwrap())(input)?;

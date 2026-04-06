@@ -16,37 +16,57 @@ use crate::core::{
 };
 
 bitflags::bitflags! {
+    /// CEMI control field 1 flags.
     #[derive(Debug, Clone)]
     pub struct CEMIFlags: u8 {
+        /// Frame type: 0 = extended, 1 = standard.
         const FT = 0b10000000;
+        /// Repeat flag.
         const R =  0b00100000;
+        /// System broadcast flag.
         const SB = 0b00010000;
+        /// Acknowledge request flag.
         const A =  0b00000010;
+        /// Confirm flag (0 = no error).
         const C =  0b00000001;
     }
 }
 // 03_03_02-2.2.3
+/// KNX telegram priority level.
 #[derive(Clone, Copy, Debug, num_derive::ToPrimitive, num_derive::FromPrimitive, PartialEq)]
 pub enum Priority {
+    /// Low priority.
     Low = 0b11,
+    /// Normal priority.
     Normal = 0b01,
+    /// Urgent priority.
     Urgent = 0b10,
+    /// System priority (highest).
     System = 0b00,
 }
 
 // 03_06_03-4.1.5.3
+/// Common External Message Interface frame.
 #[derive(Debug, Clone)]
 pub struct CEMI {
+    /// Message code identifying the frame type.
     pub mc: u8,
+    /// Control field 1 flags.
     pub flags: CEMIFlags,
+    /// Remaining hop count.
     pub hops: u8,
+    /// Telegram priority.
     pub prio: Priority,
+    /// Source individual address.
     pub source: IndividualAddress,
+    /// Destination address (individual or group).
     pub destination: DestinationAddress,
+    /// Network protocol data unit payload.
     pub npdu: NPDU,
 }
 
 impl CEMI {
+    /// Parses a CEMI frame from binary input.
     pub fn parse(input: Input) -> Result<Self>
     where
         Self: Sized,

@@ -17,6 +17,7 @@ use crate::{
     net::frames::{hpai::HPAI, Frame},
 };
 
+/// UDP socket wrapper for KNX/IP frame exchange.
 pub struct UdpEndpoint {
     local: UdpSocket,
     hpai: HPAI,
@@ -25,6 +26,7 @@ pub struct UdpEndpoint {
 }
 
 impl UdpEndpoint {
+    /// Bind a new UDP endpoint to a local address for communicating with a peer.
     pub async fn bind(
         local: Ipv4Addr,
         peer_control: SocketAddrV4,
@@ -46,14 +48,17 @@ impl UdpEndpoint {
         })
     }
 
+    /// Set the peer address used for data channel communication.
     pub fn set_data_peer(&mut self, data: SocketAddrV4) {
         self.peer_data = Some(data)
     }
 
+    /// Return the HPAI (host protocol address information) for this endpoint.
     pub fn hpai(&self) -> HPAI {
         self.hpai
     }
 
+    /// Send a frame to the data peer (or control peer if no data peer is set).
     pub async fn send_data(&self, frame: Frame) -> Result<usize, Error> {
         //debug!(?frame, ?self.peer_data, "send data");
 
@@ -65,6 +70,7 @@ impl UdpEndpoint {
             .map_err(Into::into)
     }
 
+    /// Send a frame to the control peer.
     pub async fn send_control(&self, frame: Frame) -> Result<usize, Error> {
         let bytes: Vec<u8> = frame.try_into()?;
 
@@ -74,6 +80,7 @@ impl UdpEndpoint {
             .map_err(Into::into)
     }
 
+    /// Receive the next valid frame and its source address.
     pub async fn recv(&self) -> Result<(Frame, SocketAddr), std::io::Error> {
         loop {
             let mut buffer = [0_u8; 512];
@@ -91,6 +98,7 @@ impl UdpEndpoint {
         }
     }
 
+    /// Return the standard KNX/IP multicast address (`224.0.23.12:3671`).
     pub fn multicast_peer() -> SocketAddrV4 {
         "224.0.23.12:3671".parse().unwrap()
     }

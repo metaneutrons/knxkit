@@ -12,29 +12,37 @@ use crate::net::frames::{FramePayload, ServiceType};
 use crate::core::util::prelude::*;
 
 // 03_08_04-4.4.5
+/// Tunneling connection header (03_08_04-4.4.5).
 #[derive(Debug, Clone)]
 pub struct Connection {
     // length and status are handled by TunnelingRequest and TunnelingACK
+    /// Communication channel ID.
     pub channel: u8,
+    /// Sequence counter.
     pub sequence: u8,
 }
 
 impl Connection {
+    /// Parses a connection header from wire format.
     pub fn parse(input: Input) -> Result<Self> {
         let (input, (channel, sequence)) = ((parse_u8, parse_u8)).parse(input)?;
 
         Ok((input, Connection { channel, sequence }))
     }
 
+    /// Serializes this connection header to wire format.
     pub fn gen<W: Write>(&self) -> impl SerializeFn<W> {
         gen_tuple((gen_u8(self.channel), gen_u8(self.sequence)))
     }
 }
 
 // 03_08_04-4.4.6
+/// KNXnet/IP tunneling request frame (03_08_04-4.4.6).
 #[derive(Debug, Clone)]
 pub struct TunnelingRequest {
+    /// Connection header.
     pub connection: Connection,
+    /// Raw cEMI frame data.
     pub cemi: Vec<u8>,
 }
 
@@ -71,9 +79,12 @@ impl FramePayload for TunnelingRequest {
 }
 
 // 03_08_04-4.4.7
+/// KNXnet/IP tunneling acknowledgement frame (03_08_04-4.4.7).
 #[derive(Debug, Clone)]
 pub struct TunnelingACK {
+    /// Connection header.
     pub connection: Connection,
+    /// Acknowledgement status code.
     pub status: u8,
 }
 

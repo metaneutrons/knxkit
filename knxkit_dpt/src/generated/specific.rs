@@ -1,18 +1,19 @@
 // This file is generated, don't manually edit it!
-use std::{
-    io::{SeekFrom, Cursor},
-    fmt::{Display, Debug},
-};
-use bitstream_io::{BitRead, BitReader, BE, BitWriter, BitWrite, BigEndian};
-use encoding::{
-    Encoding, all::{ASCII, ISO_8859_1, UTF_8},
-    types::{EncoderTrap, DecoderTrap},
-};
-use serde::{Serialize, Deserialize};
-use knxkit::{project::DPT, core::DataPoint};
 use crate::{
     specific::{decode_knxf16, encode_knxf16, Reserved},
     Error,
+};
+use bitstream_io::{BigEndian, BitRead, BitReader, BitWrite, BitWriter, BE};
+use encoding::{
+    all::{ASCII, ISO_8859_1, UTF_8},
+    types::{DecoderTrap, EncoderTrap},
+    Encoding,
+};
+use knxkit::{core::DataPoint, project::DPT};
+use serde::{Deserialize, Serialize};
+use std::{
+    fmt::{Debug, Display},
+    io::{Cursor, SeekFrom},
 };
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[allow(non_camel_case_types)]
@@ -1243,7 +1244,9 @@ impl crate::specific::SpecificDataPoint for DPT_4_2 {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
         writer
-            .write_from(encoding::codec::singlebyte::iso_8859_1::backward(self.0 as u32))
+            .write_from(encoding::codec::singlebyte::iso_8859_1::backward(
+                self.0 as u32,
+            ))
             .unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
@@ -1251,16 +1254,12 @@ impl crate::specific::SpecificDataPoint for DPT_4_2 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_4_2(
-                    char::from_u32(
-                            encoding::codec::singlebyte::iso_8859_1::forward(
-                                reader.read_to()?,
-                            ) as u32,
-                        )
-                        .unwrap(),
-                ),
-            )
+            Ok(DPT_4_2(
+                char::from_u32(
+                    encoding::codec::singlebyte::iso_8859_1::forward(reader.read_to()?) as u32,
+                )
+                .unwrap(),
+            ))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -1601,8 +1600,9 @@ impl crate::specific::SpecificDataPoint for DPT_6_20 {
 impl Display for DPT_6_20 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}", self.StatusA, self.StatusB, self.StatusC, self
-            .StatusD, self.StatusE, self.enumeration
+            f,
+            "{}/{}/{}/{}/{}/{}",
+            self.StatusA, self.StatusB, self.StatusC, self.StatusD, self.StatusE, self.enumeration
         )
     }
 }
@@ -2271,13 +2271,11 @@ impl crate::specific::SpecificDataPoint for DPT_9_1 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_9_1({
-                    let value: u16 = reader.read(16u8 as u32)?;
-                    let value = decode_knxf16(value);
-                    value
-                }),
-            )
+            Ok(DPT_9_1({
+                let value: u16 = reader.read(16u8 as u32)?;
+                let value = decode_knxf16(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -2303,13 +2301,11 @@ impl crate::specific::SpecificDataPoint for DPT_9_2 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_9_2({
-                    let value: u16 = reader.read(16u8 as u32)?;
-                    let value = decode_knxf16(value);
-                    value
-                }),
-            )
+            Ok(DPT_9_2({
+                let value: u16 = reader.read(16u8 as u32)?;
+                let value = decode_knxf16(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -2335,13 +2331,11 @@ impl crate::specific::SpecificDataPoint for DPT_9_3 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_9_3({
-                    let value: u16 = reader.read(16u8 as u32)?;
-                    let value = decode_knxf16(value);
-                    value
-                }),
-            )
+            Ok(DPT_9_3({
+                let value: u16 = reader.read(16u8 as u32)?;
+                let value = decode_knxf16(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -2367,13 +2361,11 @@ impl crate::specific::SpecificDataPoint for DPT_9_4 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_9_4({
-                    let value: u16 = reader.read(16u8 as u32)?;
-                    let value = decode_knxf16(value);
-                    value
-                }),
-            )
+            Ok(DPT_9_4({
+                let value: u16 = reader.read(16u8 as u32)?;
+                let value = decode_knxf16(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -2399,13 +2391,11 @@ impl crate::specific::SpecificDataPoint for DPT_9_5 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_9_5({
-                    let value: u16 = reader.read(16u8 as u32)?;
-                    let value = decode_knxf16(value);
-                    value
-                }),
-            )
+            Ok(DPT_9_5({
+                let value: u16 = reader.read(16u8 as u32)?;
+                let value = decode_knxf16(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -2431,13 +2421,11 @@ impl crate::specific::SpecificDataPoint for DPT_9_6 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_9_6({
-                    let value: u16 = reader.read(16u8 as u32)?;
-                    let value = decode_knxf16(value);
-                    value
-                }),
-            )
+            Ok(DPT_9_6({
+                let value: u16 = reader.read(16u8 as u32)?;
+                let value = decode_knxf16(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -2463,13 +2451,11 @@ impl crate::specific::SpecificDataPoint for DPT_9_7 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_9_7({
-                    let value: u16 = reader.read(16u8 as u32)?;
-                    let value = decode_knxf16(value);
-                    value
-                }),
-            )
+            Ok(DPT_9_7({
+                let value: u16 = reader.read(16u8 as u32)?;
+                let value = decode_knxf16(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -2495,13 +2481,11 @@ impl crate::specific::SpecificDataPoint for DPT_9_8 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_9_8({
-                    let value: u16 = reader.read(16u8 as u32)?;
-                    let value = decode_knxf16(value);
-                    value
-                }),
-            )
+            Ok(DPT_9_8({
+                let value: u16 = reader.read(16u8 as u32)?;
+                let value = decode_knxf16(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -2527,13 +2511,11 @@ impl crate::specific::SpecificDataPoint for DPT_9_9 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_9_9({
-                    let value: u16 = reader.read(16u8 as u32)?;
-                    let value = decode_knxf16(value);
-                    value
-                }),
-            )
+            Ok(DPT_9_9({
+                let value: u16 = reader.read(16u8 as u32)?;
+                let value = decode_knxf16(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -2559,13 +2541,11 @@ impl crate::specific::SpecificDataPoint for DPT_9_10 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_9_10({
-                    let value: u16 = reader.read(16u8 as u32)?;
-                    let value = decode_knxf16(value);
-                    value
-                }),
-            )
+            Ok(DPT_9_10({
+                let value: u16 = reader.read(16u8 as u32)?;
+                let value = decode_knxf16(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -2591,13 +2571,11 @@ impl crate::specific::SpecificDataPoint for DPT_9_11 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_9_11({
-                    let value: u16 = reader.read(16u8 as u32)?;
-                    let value = decode_knxf16(value);
-                    value
-                }),
-            )
+            Ok(DPT_9_11({
+                let value: u16 = reader.read(16u8 as u32)?;
+                let value = decode_knxf16(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -2623,13 +2601,11 @@ impl crate::specific::SpecificDataPoint for DPT_9_20 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_9_20({
-                    let value: u16 = reader.read(16u8 as u32)?;
-                    let value = decode_knxf16(value);
-                    value
-                }),
-            )
+            Ok(DPT_9_20({
+                let value: u16 = reader.read(16u8 as u32)?;
+                let value = decode_knxf16(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -2655,13 +2631,11 @@ impl crate::specific::SpecificDataPoint for DPT_9_21 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_9_21({
-                    let value: u16 = reader.read(16u8 as u32)?;
-                    let value = decode_knxf16(value);
-                    value
-                }),
-            )
+            Ok(DPT_9_21({
+                let value: u16 = reader.read(16u8 as u32)?;
+                let value = decode_knxf16(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -2687,13 +2661,11 @@ impl crate::specific::SpecificDataPoint for DPT_9_22 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_9_22({
-                    let value: u16 = reader.read(16u8 as u32)?;
-                    let value = decode_knxf16(value);
-                    value
-                }),
-            )
+            Ok(DPT_9_22({
+                let value: u16 = reader.read(16u8 as u32)?;
+                let value = decode_knxf16(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -2719,13 +2691,11 @@ impl crate::specific::SpecificDataPoint for DPT_9_23 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_9_23({
-                    let value: u16 = reader.read(16u8 as u32)?;
-                    let value = decode_knxf16(value);
-                    value
-                }),
-            )
+            Ok(DPT_9_23({
+                let value: u16 = reader.read(16u8 as u32)?;
+                let value = decode_knxf16(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -2751,13 +2721,11 @@ impl crate::specific::SpecificDataPoint for DPT_9_24 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_9_24({
-                    let value: u16 = reader.read(16u8 as u32)?;
-                    let value = decode_knxf16(value);
-                    value
-                }),
-            )
+            Ok(DPT_9_24({
+                let value: u16 = reader.read(16u8 as u32)?;
+                let value = decode_knxf16(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -2783,13 +2751,11 @@ impl crate::specific::SpecificDataPoint for DPT_9_25 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_9_25({
-                    let value: u16 = reader.read(16u8 as u32)?;
-                    let value = decode_knxf16(value);
-                    value
-                }),
-            )
+            Ok(DPT_9_25({
+                let value: u16 = reader.read(16u8 as u32)?;
+                let value = decode_knxf16(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -2815,13 +2781,11 @@ impl crate::specific::SpecificDataPoint for DPT_9_26 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_9_26({
-                    let value: u16 = reader.read(16u8 as u32)?;
-                    let value = decode_knxf16(value);
-                    value
-                }),
-            )
+            Ok(DPT_9_26({
+                let value: u16 = reader.read(16u8 as u32)?;
+                let value = decode_knxf16(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -2847,13 +2811,11 @@ impl crate::specific::SpecificDataPoint for DPT_9_27 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_9_27({
-                    let value: u16 = reader.read(16u8 as u32)?;
-                    let value = decode_knxf16(value);
-                    value
-                }),
-            )
+            Ok(DPT_9_27({
+                let value: u16 = reader.read(16u8 as u32)?;
+                let value = decode_knxf16(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -2879,13 +2841,11 @@ impl crate::specific::SpecificDataPoint for DPT_9_28 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_9_28({
-                    let value: u16 = reader.read(16u8 as u32)?;
-                    let value = decode_knxf16(value);
-                    value
-                }),
-            )
+            Ok(DPT_9_28({
+                let value: u16 = reader.read(16u8 as u32)?;
+                let value = decode_knxf16(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -2911,13 +2871,11 @@ impl crate::specific::SpecificDataPoint for DPT_9_29 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_9_29({
-                    let value: u16 = reader.read(16u8 as u32)?;
-                    let value = decode_knxf16(value);
-                    value
-                }),
-            )
+            Ok(DPT_9_29({
+                let value: u16 = reader.read(16u8 as u32)?;
+                let value = decode_knxf16(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -2943,13 +2901,11 @@ impl crate::specific::SpecificDataPoint for DPT_9_30 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_9_30({
-                    let value: u16 = reader.read(16u8 as u32)?;
-                    let value = decode_knxf16(value);
-                    value
-                }),
-            )
+            Ok(DPT_9_30({
+                let value: u16 = reader.read(16u8 as u32)?;
+                let value = decode_knxf16(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -2975,13 +2931,11 @@ impl crate::specific::SpecificDataPoint for DPT_9_31 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_9_31({
-                    let value: u16 = reader.read(16u8 as u32)?;
-                    let value = decode_knxf16(value);
-                    value
-                }),
-            )
+            Ok(DPT_9_31({
+                let value: u16 = reader.read(16u8 as u32)?;
+                let value = decode_knxf16(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -3007,13 +2961,11 @@ impl crate::specific::SpecificDataPoint for DPT_9_x {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_9_x({
-                    let value: u16 = reader.read(16u8 as u32)?;
-                    let value = decode_knxf16(value);
-                    value
-                }),
-            )
+            Ok(DPT_9_x({
+                let value: u16 = reader.read(16u8 as u32)?;
+                let value = decode_knxf16(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -3074,8 +3026,9 @@ impl crate::specific::SpecificDataPoint for DPT_10_1 {
 impl Display for DPT_10_1 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}", self.Day, self.Hour, self.reserved, self.Minutes,
-            self.reserved2, self.Seconds
+            f,
+            "{}/{}/{}/{}/{}/{}",
+            self.Day, self.Hour, self.reserved, self.Minutes, self.reserved2, self.Seconds
         )
     }
 }
@@ -3129,8 +3082,9 @@ impl crate::specific::SpecificDataPoint for DPT_10_x {
 impl Display for DPT_10_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}", self.Day, self.Hour, self.reserved, self.Minutes,
-            self.reserved2, self.Seconds
+            f,
+            "{}/{}/{}/{}/{}/{}",
+            self.Day, self.Hour, self.reserved, self.Minutes, self.reserved2, self.Seconds
         )
     }
 }
@@ -3187,8 +3141,9 @@ impl crate::specific::SpecificDataPoint for DPT_11_1 {
 impl Display for DPT_11_1 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}", self.reserved, self.int, self.reserved2, self.int2,
-            self.reserved3, self.int3
+            f,
+            "{}/{}/{}/{}/{}/{}",
+            self.reserved, self.int, self.reserved2, self.int2, self.reserved3, self.int3
         )
     }
 }
@@ -3245,8 +3200,9 @@ impl crate::specific::SpecificDataPoint for DPT_11_x {
 impl Display for DPT_11_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}", self.reserved, self.int, self.reserved2, self.int2,
-            self.reserved3, self.int3
+            f,
+            "{}/{}/{}/{}/{}/{}",
+            self.reserved, self.int, self.reserved2, self.int2, self.reserved3, self.int3
         )
     }
 }
@@ -3785,13 +3741,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_0 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_0({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_0({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -3817,13 +3771,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_1 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_1({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_1({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -3849,13 +3801,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_2 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_2({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_2({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -3881,13 +3831,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_3 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_3({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_3({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -3913,13 +3861,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_4 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_4({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_4({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -3945,13 +3891,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_5 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_5({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_5({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -3977,13 +3921,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_6 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_6({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_6({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4009,13 +3951,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_7 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_7({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_7({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4041,13 +3981,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_8 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_8({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_8({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4073,13 +4011,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_9 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_9({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_9({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4105,13 +4041,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_10 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_10({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_10({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4137,13 +4071,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_11 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_11({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_11({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4169,13 +4101,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_12 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_12({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_12({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4201,13 +4131,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_13 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_13({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_13({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4233,13 +4161,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_14 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_14({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_14({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4265,13 +4191,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_15 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_15({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_15({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4297,13 +4221,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_16 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_16({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_16({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4329,13 +4251,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_17 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_17({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_17({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4361,13 +4281,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_18 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_18({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_18({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4393,13 +4311,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_19 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_19({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_19({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4425,13 +4341,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_20 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_20({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_20({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4457,13 +4371,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_21 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_21({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_21({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4489,13 +4401,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_22 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_22({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_22({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4521,13 +4431,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_23 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_23({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_23({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4553,13 +4461,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_24 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_24({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_24({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4585,13 +4491,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_25 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_25({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_25({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4617,13 +4521,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_26 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_26({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_26({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4649,13 +4551,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_27 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_27({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_27({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4681,13 +4581,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_28 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_28({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_28({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4713,13 +4611,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_29 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_29({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_29({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4745,13 +4641,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_30 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_30({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_30({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4777,13 +4671,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_31 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_31({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_31({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4809,13 +4701,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_32 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_32({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_32({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4841,13 +4731,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_33 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_33({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_33({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4873,13 +4761,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_34 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_34({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_34({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4905,13 +4791,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_35 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_35({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_35({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4937,13 +4821,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_36 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_36({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_36({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -4969,13 +4851,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_37 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_37({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_37({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5001,13 +4881,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_38 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_38({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_38({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5033,13 +4911,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_39 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_39({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_39({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5065,13 +4941,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_40 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_40({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_40({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5097,13 +4971,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_41 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_41({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_41({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5129,13 +5001,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_42 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_42({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_42({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5161,13 +5031,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_43 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_43({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_43({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5193,13 +5061,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_44 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_44({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_44({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5225,13 +5091,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_45 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_45({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_45({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5257,13 +5121,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_46 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_46({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_46({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5289,13 +5151,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_47 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_47({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_47({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5321,13 +5181,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_48 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_48({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_48({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5353,13 +5211,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_49 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_49({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_49({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5385,13 +5241,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_50 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_50({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_50({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5417,13 +5271,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_51 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_51({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_51({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5449,13 +5301,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_52 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_52({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_52({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5481,13 +5331,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_53 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_53({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_53({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5513,13 +5361,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_54 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_54({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_54({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5545,13 +5391,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_55 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_55({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_55({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5577,13 +5421,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_56 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_56({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_56({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5609,13 +5451,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_57 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_57({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_57({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5641,13 +5481,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_58 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_58({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_58({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5673,13 +5511,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_59 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_59({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_59({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5705,13 +5541,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_60 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_60({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_60({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5737,13 +5571,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_61 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_61({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_61({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5769,13 +5601,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_62 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_62({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_62({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5801,13 +5631,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_63 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_63({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_63({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5833,13 +5661,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_64 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_64({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_64({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5865,13 +5691,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_65 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_65({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_65({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5897,13 +5721,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_66 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_66({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_66({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5929,13 +5751,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_67 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_67({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_67({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5961,13 +5781,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_68 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_68({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_68({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -5993,13 +5811,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_69 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_69({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_69({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -6025,13 +5841,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_70 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_70({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_70({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -6057,13 +5871,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_71 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_71({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_71({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -6089,13 +5901,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_72 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_72({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_72({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -6121,13 +5931,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_73 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_73({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_73({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -6153,13 +5961,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_74 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_74({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_74({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -6185,13 +5991,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_75 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_75({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_75({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -6217,13 +6021,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_76 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_76({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_76({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -6249,13 +6051,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_77 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_77({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_77({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -6281,13 +6081,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_78 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_78({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_78({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -6313,13 +6111,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_79 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_79({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_79({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -6345,13 +6141,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_80 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_80({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_80({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -6377,13 +6171,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_1200 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_1200({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_1200({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -6409,13 +6201,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_1201 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_1201({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_1201({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -6441,13 +6231,11 @@ impl crate::specific::SpecificDataPoint for DPT_14_x {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_14_x({
-                    let value: u32 = reader.read(32u8 as u32)?;
-                    let value = f32::from_bits(value);
-                    value
-                }),
-            )
+            Ok(DPT_14_x({
+                let value: u32 = reader.read(32u8 as u32)?;
+                let value = f32::from_bits(value);
+                value
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -6488,8 +6276,12 @@ impl crate::specific::SpecificDataPoint for DPT_15_0 {
         writer.write_bit(self.Detectionerror).unwrap();
         writer.write_bit(self.Permission).unwrap();
         writer.write_bit(self.Readdirection).unwrap();
-        writer.write_bit(self.Encryptionofaccessinformation).unwrap();
-        writer.write(4u8 as u32, self.Indexofaccessidentificationcode).unwrap();
+        writer
+            .write_bit(self.Encryptionofaccessinformation)
+            .unwrap();
+        writer
+            .write(4u8 as u32, self.Indexofaccessidentificationcode)
+            .unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
     }
@@ -6517,10 +6309,19 @@ impl crate::specific::SpecificDataPoint for DPT_15_0 {
 impl Display for DPT_15_0 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}", self.int, self.int2, self.int3, self
-            .int4, self.int5, self.int6, self.Detectionerror, self.Permission, self
-            .Readdirection, self.Encryptionofaccessinformation, self
-            .Indexofaccessidentificationcode
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.int,
+            self.int2,
+            self.int3,
+            self.int4,
+            self.int5,
+            self.int6,
+            self.Detectionerror,
+            self.Permission,
+            self.Readdirection,
+            self.Encryptionofaccessinformation,
+            self.Indexofaccessidentificationcode
         )
     }
 }
@@ -6554,8 +6355,12 @@ impl crate::specific::SpecificDataPoint for DPT_15_x {
         writer.write_bit(self.Detectionerror).unwrap();
         writer.write_bit(self.Permission).unwrap();
         writer.write_bit(self.Readdirection).unwrap();
-        writer.write_bit(self.Encryptionofaccessinformation).unwrap();
-        writer.write(4u8 as u32, self.Indexofaccessidentificationcode).unwrap();
+        writer
+            .write_bit(self.Encryptionofaccessinformation)
+            .unwrap();
+        writer
+            .write(4u8 as u32, self.Indexofaccessidentificationcode)
+            .unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
     }
@@ -6583,10 +6388,19 @@ impl crate::specific::SpecificDataPoint for DPT_15_x {
 impl Display for DPT_15_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}", self.int, self.int2, self.int3, self
-            .int4, self.int5, self.int6, self.Detectionerror, self.Permission, self
-            .Readdirection, self.Encryptionofaccessinformation, self
-            .Indexofaccessidentificationcode
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.int,
+            self.int2,
+            self.int3,
+            self.int4,
+            self.int5,
+            self.int6,
+            self.Detectionerror,
+            self.Permission,
+            self.Readdirection,
+            self.Encryptionofaccessinformation,
+            self.Indexofaccessidentificationcode
         )
     }
 }
@@ -6599,7 +6413,9 @@ impl crate::specific::SpecificDataPoint for DPT_16_0 {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
         let mut buffer = vec![0u8; (112u16 / 8) as usize];
-        ASCII.encode_to(self.0.as_str(), EncoderTrap::Replace, &mut buffer).unwrap();
+        ASCII
+            .encode_to(self.0.as_str(), EncoderTrap::Replace, &mut buffer)
+            .unwrap();
         writer.write_bytes(&buffer).unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
@@ -6607,13 +6423,11 @@ impl crate::specific::SpecificDataPoint for DPT_16_0 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_16_0({
-                    let mut value = [0u8; (112u16 / 8) as usize];
-                    reader.read_bytes(&mut value)?;
-                    ASCII.decode(&value, DecoderTrap::Replace).unwrap()
-                }),
-            )
+            Ok(DPT_16_0({
+                let mut value = [0u8; (112u16 / 8) as usize];
+                reader.read_bytes(&mut value)?;
+                ASCII.decode(&value, DecoderTrap::Replace).unwrap()
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -6643,13 +6457,11 @@ impl crate::specific::SpecificDataPoint for DPT_16_1 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_16_1({
-                    let mut value = [0u8; (112u16 / 8) as usize];
-                    reader.read_bytes(&mut value)?;
-                    ISO_8859_1.decode(&value, DecoderTrap::Replace).unwrap()
-                }),
-            )
+            Ok(DPT_16_1({
+                let mut value = [0u8; (112u16 / 8) as usize];
+                reader.read_bytes(&mut value)?;
+                ISO_8859_1.decode(&value, DecoderTrap::Replace).unwrap()
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -6669,7 +6481,9 @@ impl crate::specific::SpecificDataPoint for DPT_16_x {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
         let mut buffer = vec![0u8; (112u16 / 8) as usize];
-        ASCII.encode_to(self.0.as_str(), EncoderTrap::Replace, &mut buffer).unwrap();
+        ASCII
+            .encode_to(self.0.as_str(), EncoderTrap::Replace, &mut buffer)
+            .unwrap();
         writer.write_bytes(&buffer).unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
@@ -6677,13 +6491,11 @@ impl crate::specific::SpecificDataPoint for DPT_16_x {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_16_x({
-                    let mut value = [0u8; (112u16 / 8) as usize];
-                    reader.read_bytes(&mut value)?;
-                    ASCII.decode(&value, DecoderTrap::Replace).unwrap()
-                }),
-            )
+            Ok(DPT_16_x({
+                let mut value = [0u8; (112u16 / 8) as usize];
+                reader.read_bytes(&mut value)?;
+                ASCII.decode(&value, DecoderTrap::Replace).unwrap()
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -6781,7 +6593,9 @@ impl crate::specific::SpecificDataPoint for DPT_18_1 {
     fn to_data_point(&self) -> DataPoint {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
-        writer.write_bit(self.learnthescenecorrespondingtothefieldSceneNumber).unwrap();
+        writer
+            .write_bit(self.learnthescenecorrespondingtothefieldSceneNumber)
+            .unwrap();
         writer.write(1u8 as u32, 0u32).unwrap();
         writer.write(6u8 as u32, self.Scenenumber).unwrap();
         writer.flush().unwrap();
@@ -6806,8 +6620,9 @@ impl crate::specific::SpecificDataPoint for DPT_18_1 {
 impl Display for DPT_18_1 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}", self.learnthescenecorrespondingtothefieldSceneNumber, self
-            .reserved, self.Scenenumber
+            f,
+            "{}/{}/{}",
+            self.learnthescenecorrespondingtothefieldSceneNumber, self.reserved, self.Scenenumber
         )
     }
 }
@@ -6824,7 +6639,9 @@ impl crate::specific::SpecificDataPoint for DPT_18_x {
     fn to_data_point(&self) -> DataPoint {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
-        writer.write_bit(self.learnthescenecorrespondingtothefieldSceneNumber).unwrap();
+        writer
+            .write_bit(self.learnthescenecorrespondingtothefieldSceneNumber)
+            .unwrap();
         writer.write(1u8 as u32, 0u32).unwrap();
         writer.write(6u8 as u32, self.Scenenumber).unwrap();
         writer.flush().unwrap();
@@ -6849,8 +6666,9 @@ impl crate::specific::SpecificDataPoint for DPT_18_x {
 impl Display for DPT_18_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}", self.learnthescenecorrespondingtothefieldSceneNumber, self
-            .reserved, self.Scenenumber
+            f,
+            "{}/{}/{}",
+            self.learnthescenecorrespondingtothefieldSceneNumber, self.reserved, self.Scenenumber
         )
     }
 }
@@ -6958,12 +6776,29 @@ impl crate::specific::SpecificDataPoint for DPT_19_1 {
 impl Display for DPT_19_1 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}", self
-            .Year, self.reserved, self.Month, self.reserved2, self.DayOfMonth, self
-            .DayOfWeek, self.HourOfDay, self.reserved3, self.Minutes, self.reserved4,
-            self.Seconds, self.Fault, self.WorkingDay, self.NoWD, self.NoYear, self
-            .NoDate, self.NoDayofWeek, self.NoTime, self.StandardSummerTime, self
-            .Qualityofclock, self.reserved5
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.Year,
+            self.reserved,
+            self.Month,
+            self.reserved2,
+            self.DayOfMonth,
+            self.DayOfWeek,
+            self.HourOfDay,
+            self.reserved3,
+            self.Minutes,
+            self.reserved4,
+            self.Seconds,
+            self.Fault,
+            self.WorkingDay,
+            self.NoWD,
+            self.NoYear,
+            self.NoDate,
+            self.NoDayofWeek,
+            self.NoTime,
+            self.StandardSummerTime,
+            self.Qualityofclock,
+            self.reserved5
         )
     }
 }
@@ -7071,12 +6906,29 @@ impl crate::specific::SpecificDataPoint for DPT_19_x {
 impl Display for DPT_19_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}", self
-            .Year, self.reserved, self.Month, self.reserved2, self.DayOfMonth, self
-            .DayOfWeek, self.HourOfDay, self.reserved3, self.Minutes, self.reserved4,
-            self.Seconds, self.Fault, self.WorkingDay, self.NoWD, self.NoYear, self
-            .NoDate, self.NoDayofWeek, self.NoTime, self.StandardSummerTime, self
-            .Qualityofclock, self.reserved5
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.Year,
+            self.reserved,
+            self.Month,
+            self.reserved2,
+            self.DayOfMonth,
+            self.DayOfWeek,
+            self.HourOfDay,
+            self.reserved3,
+            self.Minutes,
+            self.reserved4,
+            self.Seconds,
+            self.Fault,
+            self.WorkingDay,
+            self.NoWD,
+            self.NoYear,
+            self.NoDate,
+            self.NoDayofWeek,
+            self.NoTime,
+            self.StandardSummerTime,
+            self.Qualityofclock,
+            self.reserved5
         )
     }
 }
@@ -8608,12 +8460,18 @@ impl crate::specific::SpecificDataPoint for DPT_21_1 {
         writer
             .write_bit(self.alarmstatusofcorrespondingDatapointisnotacknowledged)
             .unwrap();
-        writer.write_bit(self.correspondingDatapointisinalarm).unwrap();
-        writer.write_bit(self.correspondingDatapointMainvalueisoverridden).unwrap();
+        writer
+            .write_bit(self.correspondingDatapointisinalarm)
+            .unwrap();
+        writer
+            .write_bit(self.correspondingDatapointMainvalueisoverridden)
+            .unwrap();
         writer
             .write_bit(self.correspondingDatapointMainvalueiscorruptedduetofailure)
             .unwrap();
-        writer.write_bit(self.correspondingDatapointvalueisoutofservice).unwrap();
+        writer
+            .write_bit(self.correspondingDatapointvalueisoutofservice)
+            .unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
     }
@@ -8628,8 +8486,7 @@ impl crate::specific::SpecificDataPoint for DPT_21_1 {
                 alarmstatusofcorrespondingDatapointisnotacknowledged: reader.read_bit()?,
                 correspondingDatapointisinalarm: reader.read_bit()?,
                 correspondingDatapointMainvalueisoverridden: reader.read_bit()?,
-                correspondingDatapointMainvalueiscorruptedduetofailure: reader
-                    .read_bit()?,
+                correspondingDatapointMainvalueiscorruptedduetofailure: reader.read_bit()?,
                 correspondingDatapointvalueisoutofservice: reader.read_bit()?,
             })
         } else {
@@ -8640,12 +8497,14 @@ impl crate::specific::SpecificDataPoint for DPT_21_1 {
 impl Display for DPT_21_1 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}", self.reserved, self
-            .alarmstatusofcorrespondingDatapointisnotacknowledged, self
-            .correspondingDatapointisinalarm, self
-            .correspondingDatapointMainvalueisoverridden, self
-            .correspondingDatapointMainvalueiscorruptedduetofailure, self
-            .correspondingDatapointvalueisoutofservice
+            f,
+            "{}/{}/{}/{}/{}/{}",
+            self.reserved,
+            self.alarmstatusofcorrespondingDatapointisnotacknowledged,
+            self.correspondingDatapointisinalarm,
+            self.correspondingDatapointMainvalueisoverridden,
+            self.correspondingDatapointMainvalueiscorruptedduetofailure,
+            self.correspondingDatapointvalueisoutofservice
         )
     }
 }
@@ -8666,9 +8525,7 @@ impl crate::specific::SpecificDataPoint for DPT_21_2 {
         writer.write(5u8 as u32, 0u32).unwrap();
         writer.write_bit(self.VerifyModeison).unwrap();
         writer
-            .write_bit(
-                self.AdatagramwiththeownIndividualAddressasSourceAddresshasbeenreceived,
-            )
+            .write_bit(self.AdatagramwiththeownIndividualAddressasSourceAddresshasbeenreceived)
             .unwrap();
         writer.write_bit(self.Theuserapplicationisstopped).unwrap();
         writer.flush().unwrap();
@@ -8695,9 +8552,12 @@ impl crate::specific::SpecificDataPoint for DPT_21_2 {
 impl Display for DPT_21_2 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}", self.reserved, self.VerifyModeison, self
-            .AdatagramwiththeownIndividualAddressasSourceAddresshasbeenreceived, self
-            .Theuserapplicationisstopped
+            f,
+            "{}/{}/{}/{}",
+            self.reserved,
+            self.VerifyModeison,
+            self.AdatagramwiththeownIndividualAddressasSourceAddresshasbeenreceived,
+            self.Theuserapplicationisstopped
         )
     }
 }
@@ -8751,9 +8611,16 @@ impl crate::specific::SpecificDataPoint for DPT_21_100 {
 impl Display for DPT_21_100 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}", self.RoomHMax, self.RoomHConf, self.DHWLegio,
-            self.DHWNorm, self.Overrun, self.Oversupply, self.Protection, self
-            .ForceRequest
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}",
+            self.RoomHMax,
+            self.RoomHConf,
+            self.DHWLegio,
+            self.DHWNorm,
+            self.Overrun,
+            self.Oversupply,
+            self.Protection,
+            self.ForceRequest
         )
     }
 }
@@ -8844,9 +8711,16 @@ impl crate::specific::SpecificDataPoint for DPT_21_102 {
 impl Display for DPT_21_102 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}", self.SummerMode, self.StatusStopOptim, self
-            .StatusStartOptim, self.StatusMorningBoost, self.TempReturnLimit, self
-            .TempFlowLimit, self.SatusECO, self.Fault
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}",
+            self.SummerMode,
+            self.StatusStopOptim,
+            self.StatusStartOptim,
+            self.StatusMorningBoost,
+            self.TempReturnLimit,
+            self.TempFlowLimit,
+            self.SatusECO,
+            self.Fault
         )
     }
 }
@@ -8891,8 +8765,9 @@ impl crate::specific::SpecificDataPoint for DPT_21_103 {
 impl Display for DPT_21_103 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}", self.reserved, self.SolarLoadSufficient, self
-            .SDHWLoadActive, self.Fault
+            f,
+            "{}/{}/{}/{}",
+            self.reserved, self.SolarLoadSufficient, self.SDHWLoadActive, self.Fault
         )
     }
 }
@@ -8936,7 +8811,11 @@ impl crate::specific::SpecificDataPoint for DPT_21_104 {
 }
 impl Display for DPT_21_104 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{}/{}/{}/{}", self.reserved, self.SolidState, self.Gas, self.Oil)
+        write!(
+            f,
+            "{}/{}/{}/{}",
+            self.reserved, self.SolidState, self.Gas, self.Oil
+        )
     }
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -9020,8 +8899,9 @@ impl crate::specific::SpecificDataPoint for DPT_21_106 {
 impl Display for DPT_21_106 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}", self.reserved, self.Cool, self.Heat, self.FanActive,
-            self.Fault
+            f,
+            "{}/{}/{}/{}/{}",
+            self.reserved, self.Cool, self.Heat, self.FanActive, self.Fault
         )
     }
 }
@@ -9043,10 +8923,18 @@ impl crate::specific::SpecificDataPoint for DPT_21_107 {
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
         writer.write(3u8 as u32, 0u32).unwrap();
         writer.write_bit(self.StatusofHVACModeUser).unwrap();
-        writer.write_bit(self.StatusofcomfortprolongationUser).unwrap();
-        writer.write_bit(self.Effectivevalueofthecomfortpushbutton).unwrap();
-        writer.write_bit(self.Effectivevalueofthepresencestatus).unwrap();
-        writer.write_bit(self.Effectivevalueofthewindowstatus).unwrap();
+        writer
+            .write_bit(self.StatusofcomfortprolongationUser)
+            .unwrap();
+        writer
+            .write_bit(self.Effectivevalueofthecomfortpushbutton)
+            .unwrap();
+        writer
+            .write_bit(self.Effectivevalueofthepresencestatus)
+            .unwrap();
+        writer
+            .write_bit(self.Effectivevalueofthewindowstatus)
+            .unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
     }
@@ -9072,9 +8960,14 @@ impl crate::specific::SpecificDataPoint for DPT_21_107 {
 impl Display for DPT_21_107 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}", self.reserved, self.StatusofHVACModeUser, self
-            .StatusofcomfortprolongationUser, self.Effectivevalueofthecomfortpushbutton,
-            self.Effectivevalueofthepresencestatus, self.Effectivevalueofthewindowstatus
+            f,
+            "{}/{}/{}/{}/{}/{}",
+            self.reserved,
+            self.StatusofHVACModeUser,
+            self.StatusofcomfortprolongationUser,
+            self.Effectivevalueofthecomfortpushbutton,
+            self.Effectivevalueofthepresencestatus,
+            self.Effectivevalueofthewindowstatus
         )
     }
 }
@@ -9131,9 +9024,16 @@ impl crate::specific::SpecificDataPoint for DPT_21_601 {
 impl Display for DPT_21_601 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}", self.reserved, self.Overheat, self.LampFailure,
-            self.DefectiveLoad, self.Underload, self.Overcurrent, self.Undervoltage, self
-            .LoadDetectionError
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}",
+            self.reserved,
+            self.Overheat,
+            self.LampFailure,
+            self.DefectiveLoad,
+            self.Underload,
+            self.Overcurrent,
+            self.Undervoltage,
+            self.LoadDetectionError
         )
     }
 }
@@ -9178,8 +9078,9 @@ impl crate::specific::SpecificDataPoint for DPT_21_1000 {
 impl Display for DPT_21_1000 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}", self.reserved, self.BiBatSlave, self.BiBatMaster, self
-            .Asynchronous
+            f,
+            "{}/{}/{}/{}",
+            self.reserved, self.BiBatSlave, self.BiBatMaster, self.Asynchronous
         )
     }
 }
@@ -9223,7 +9124,11 @@ impl crate::specific::SpecificDataPoint for DPT_21_1001 {
 }
 impl Display for DPT_21_1001 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{}/{}/{}/{}", self.reserved, self.DoA, self.KNXSN, self.DoAandKNXSN)
+        write!(
+            f,
+            "{}/{}/{}/{}",
+            self.reserved, self.DoA, self.KNXSN, self.DoAandKNXSN
+        )
     }
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -9276,11 +9181,16 @@ impl crate::specific::SpecificDataPoint for DPT_21_1010 {
 impl Display for DPT_21_1010 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}", self.Activationstateofchannel, self
-            .Activationstateofchannel2, self.Activationstateofchannel3, self
-            .Activationstateofchannel4, self.Activationstateofchannel5, self
-            .Activationstateofchannel6, self.Activationstateofchannel7, self
-            .Activationstateofchannel8
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}",
+            self.Activationstateofchannel,
+            self.Activationstateofchannel2,
+            self.Activationstateofchannel3,
+            self.Activationstateofchannel4,
+            self.Activationstateofchannel5,
+            self.Activationstateofchannel6,
+            self.Activationstateofchannel7,
+            self.Activationstateofchannel8
         )
     }
 }
@@ -9304,12 +9214,18 @@ impl crate::specific::SpecificDataPoint for DPT_21_x {
         writer
             .write_bit(self.alarmstatusofcorrespondingDatapointisnotacknowledged)
             .unwrap();
-        writer.write_bit(self.correspondingDatapointisinalarm).unwrap();
-        writer.write_bit(self.correspondingDatapointMainvalueisoverridden).unwrap();
+        writer
+            .write_bit(self.correspondingDatapointisinalarm)
+            .unwrap();
+        writer
+            .write_bit(self.correspondingDatapointMainvalueisoverridden)
+            .unwrap();
         writer
             .write_bit(self.correspondingDatapointMainvalueiscorruptedduetofailure)
             .unwrap();
-        writer.write_bit(self.correspondingDatapointvalueisoutofservice).unwrap();
+        writer
+            .write_bit(self.correspondingDatapointvalueisoutofservice)
+            .unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
     }
@@ -9324,8 +9240,7 @@ impl crate::specific::SpecificDataPoint for DPT_21_x {
                 alarmstatusofcorrespondingDatapointisnotacknowledged: reader.read_bit()?,
                 correspondingDatapointisinalarm: reader.read_bit()?,
                 correspondingDatapointMainvalueisoverridden: reader.read_bit()?,
-                correspondingDatapointMainvalueiscorruptedduetofailure: reader
-                    .read_bit()?,
+                correspondingDatapointMainvalueiscorruptedduetofailure: reader.read_bit()?,
                 correspondingDatapointvalueisoutofservice: reader.read_bit()?,
             })
         } else {
@@ -9336,12 +9251,14 @@ impl crate::specific::SpecificDataPoint for DPT_21_x {
 impl Display for DPT_21_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}", self.reserved, self
-            .alarmstatusofcorrespondingDatapointisnotacknowledged, self
-            .correspondingDatapointisinalarm, self
-            .correspondingDatapointMainvalueisoverridden, self
-            .correspondingDatapointMainvalueiscorruptedduetofailure, self
-            .correspondingDatapointvalueisoutofservice
+            f,
+            "{}/{}/{}/{}/{}/{}",
+            self.reserved,
+            self.alarmstatusofcorrespondingDatapointisnotacknowledged,
+            self.correspondingDatapointisinalarm,
+            self.correspondingDatapointMainvalueisoverridden,
+            self.correspondingDatapointMainvalueiscorruptedduetofailure,
+            self.correspondingDatapointvalueisoutofservice
         )
     }
 }
@@ -9401,9 +9318,17 @@ impl crate::specific::SpecificDataPoint for DPT_22_100 {
 impl Display for DPT_22_100 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}", self.reserved, self.TempOptimShiftActive,
-            self.SolarEnergySupport, self.SolarEnergyOnly, self.OtherEnergySourceActive,
-            self.DHWPushActive, self.LegioProtActive, self.DHWLoadActive, self.Fault
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.reserved,
+            self.TempOptimShiftActive,
+            self.SolarEnergySupport,
+            self.SolarEnergyOnly,
+            self.OtherEnergySourceActive,
+            self.DHWPushActive,
+            self.LegioProtActive,
+            self.DHWLoadActive,
+            self.Fault
         )
     }
 }
@@ -9484,11 +9409,24 @@ impl crate::specific::SpecificDataPoint for DPT_22_101 {
 impl Display for DPT_22_101 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}", self.reserved, self
-            .OverheatAlarm, self.FrostAlarm, self.DewPointStatus, self.CoolingDisabled,
-            self.StatusPreCool, self.StatusEcoC, self.HeatCoolMode, self.HeatingDiabled,
-            self.StatusStopOptim, self.StatusStartOptim, self.StatusMorningBoostH, self
-            .TempFlowReturnLimit, self.TempFlowLimit, self.StatusEcoH, self.Fault
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.reserved,
+            self.OverheatAlarm,
+            self.FrostAlarm,
+            self.DewPointStatus,
+            self.CoolingDisabled,
+            self.StatusPreCool,
+            self.StatusEcoC,
+            self.HeatCoolMode,
+            self.HeatingDiabled,
+            self.StatusStopOptim,
+            self.StatusStartOptim,
+            self.StatusMorningBoostH,
+            self.TempFlowReturnLimit,
+            self.TempFlowLimit,
+            self.StatusEcoH,
+            self.Fault
         )
     }
 }
@@ -9551,10 +9489,18 @@ impl crate::specific::SpecificDataPoint for DPT_22_102 {
 impl Display for DPT_22_102 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}", self.reserved, self.CalibrationMode, self
-            .LockedPosition, self.ForcedPosition, self.Manuaoperationoverridden, self
-            .Servicemode, self.Valvekick, self.Overload, self.ShortCircuit, self
-            .CurrentValveposition
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.reserved,
+            self.CalibrationMode,
+            self.LockedPosition,
+            self.ForcedPosition,
+            self.Manuaoperationoverridden,
+            self.Servicemode,
+            self.Valvekick,
+            self.Overload,
+            self.ShortCircuit,
+            self.CurrentValveposition
         )
     }
 }
@@ -9581,7 +9527,9 @@ impl crate::specific::SpecificDataPoint for DPT_22_103 {
         writer.write(7u8 as u32, 0u32).unwrap();
         writer.write_bit(self.CoolingModeEnabled).unwrap();
         writer.write_bit(self.HeatingModeEnabled).unwrap();
-        writer.write_bit(self.AdditionalheatingcoolingstageStage).unwrap();
+        writer
+            .write_bit(self.AdditionalheatingcoolingstageStage)
+            .unwrap();
         writer.write_bit(self.Controllerinactive).unwrap();
         writer.write_bit(self.OverheatAlarm).unwrap();
         writer.write_bit(self.FrostAlarm).unwrap();
@@ -9617,10 +9565,18 @@ impl crate::specific::SpecificDataPoint for DPT_22_103 {
 impl Display for DPT_22_103 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}", self.reserved, self.CoolingModeEnabled,
-            self.HeatingModeEnabled, self.AdditionalheatingcoolingstageStage, self
-            .Controllerinactive, self.OverheatAlarm, self.FrostAlarm, self
-            .DewPointStatus, self.ActiveMode, self.Generalfailureinformation
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.reserved,
+            self.CoolingModeEnabled,
+            self.HeatingModeEnabled,
+            self.AdditionalheatingcoolingstageStage,
+            self.Controllerinactive,
+            self.OverheatAlarm,
+            self.FrostAlarm,
+            self.DewPointStatus,
+            self.ActiveMode,
+            self.Generalfailureinformation
         )
     }
 }
@@ -9680,8 +9636,9 @@ impl crate::specific::SpecificDataPoint for DPT_22_1000 {
 impl Display for DPT_22_1000 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}", self.reserved, self.KNXIP, self.RF, self
-            .reserved2, self.PL, self.TP, self.reserved3
+            f,
+            "{}/{}/{}/{}/{}/{}/{}",
+            self.reserved, self.KNXIP, self.RF, self.reserved2, self.PL, self.TP, self.reserved3
         )
     }
 }
@@ -9759,15 +9716,24 @@ impl crate::specific::SpecificDataPoint for DPT_22_1010 {
 impl Display for DPT_22_1010 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}", self
-            .Activationstateofchannel, self.Activationstateofchannel2, self
-            .Activationstateofchannel3, self.Activationstateofchannel4, self
-            .Activationstateofchannel5, self.Activationstateofchannel6, self
-            .Activationstateofchannel7, self.Activationstateofchannel8, self
-            .Activationstateofchannel9, self.Activationstateofchannel10, self
-            .Activationstateofchannel11, self.Activationstateofchannel12, self
-            .Activationstateofchannel13, self.Activationstateofchannel14, self
-            .Activationstateofchannel15, self.Activationstateofchannel16
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.Activationstateofchannel,
+            self.Activationstateofchannel2,
+            self.Activationstateofchannel3,
+            self.Activationstateofchannel4,
+            self.Activationstateofchannel5,
+            self.Activationstateofchannel6,
+            self.Activationstateofchannel7,
+            self.Activationstateofchannel8,
+            self.Activationstateofchannel9,
+            self.Activationstateofchannel10,
+            self.Activationstateofchannel11,
+            self.Activationstateofchannel12,
+            self.Activationstateofchannel13,
+            self.Activationstateofchannel14,
+            self.Activationstateofchannel15,
+            self.Activationstateofchannel16
         )
     }
 }
@@ -9827,9 +9793,17 @@ impl crate::specific::SpecificDataPoint for DPT_22_x {
 impl Display for DPT_22_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}", self.reserved, self.TempOptimShiftActive,
-            self.SolarEnergySupport, self.SolarEnergyOnly, self.OtherEnergySourceActive,
-            self.DHWPushActive, self.LegioProtActive, self.DHWLoadActive, self.Fault
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.reserved,
+            self.TempOptimShiftActive,
+            self.SolarEnergySupport,
+            self.SolarEnergyOnly,
+            self.OtherEnergySourceActive,
+            self.DHWPushActive,
+            self.LegioProtActive,
+            self.DHWLoadActive,
+            self.Fault
         )
     }
 }
@@ -9971,7 +9945,9 @@ impl crate::specific::SpecificDataPoint for DPT_24_1 {
     fn to_data_point(&self) -> DataPoint {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
-        let bytes = ISO_8859_1.encode(self.0.as_str(), EncoderTrap::Replace).unwrap();
+        let bytes = ISO_8859_1
+            .encode(self.0.as_str(), EncoderTrap::Replace)
+            .unwrap();
         writer.write_bytes(&bytes).unwrap();
         writer.write_bytes(&[0]).unwrap();
         writer.flush().unwrap();
@@ -9980,17 +9956,17 @@ impl crate::specific::SpecificDataPoint for DPT_24_1 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_24_1({
-                    let mut buffer = [0u8; 2048];
-                    reader.read_bytes(&mut buffer).unwrap();
-                    let end = buffer
-                        .iter()
-                        .position(|&c| c == b'\0')
-                        .unwrap_or(buffer.len());
-                    ISO_8859_1.decode(&buffer[0..end], DecoderTrap::Replace).unwrap()
-                }),
-            )
+            Ok(DPT_24_1({
+                let mut buffer = [0u8; 2048];
+                reader.read_bytes(&mut buffer).unwrap();
+                let end = buffer
+                    .iter()
+                    .position(|&c| c == b'\0')
+                    .unwrap_or(buffer.len());
+                ISO_8859_1
+                    .decode(&buffer[0..end], DecoderTrap::Replace)
+                    .unwrap()
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -10009,7 +9985,9 @@ impl crate::specific::SpecificDataPoint for DPT_24_x {
     fn to_data_point(&self) -> DataPoint {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
-        let bytes = ISO_8859_1.encode(self.0.as_str(), EncoderTrap::Replace).unwrap();
+        let bytes = ISO_8859_1
+            .encode(self.0.as_str(), EncoderTrap::Replace)
+            .unwrap();
         writer.write_bytes(&bytes).unwrap();
         writer.write_bytes(&[0]).unwrap();
         writer.flush().unwrap();
@@ -10018,17 +9996,17 @@ impl crate::specific::SpecificDataPoint for DPT_24_x {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_24_x({
-                    let mut buffer = [0u8; 2048];
-                    reader.read_bytes(&mut buffer).unwrap();
-                    let end = buffer
-                        .iter()
-                        .position(|&c| c == b'\0')
-                        .unwrap_or(buffer.len());
-                    ISO_8859_1.decode(&buffer[0..end], DecoderTrap::Replace).unwrap()
-                }),
-            )
+            Ok(DPT_24_x({
+                let mut buffer = [0u8; 2048];
+                reader.read_bytes(&mut buffer).unwrap();
+                let end = buffer
+                    .iter()
+                    .position(|&c| c == b'\0')
+                    .unwrap_or(buffer.len());
+                ISO_8859_1
+                    .decode(&buffer[0..end], DecoderTrap::Replace)
+                    .unwrap()
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -10144,7 +10122,11 @@ impl crate::specific::SpecificDataPoint for DPT_26_1 {
 }
 impl Display for DPT_26_1 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{}/{}/{}", self.reserved, self.sceneisinactive, self.SceneNumber)
+        write!(
+            f,
+            "{}/{}/{}",
+            self.reserved, self.sceneisinactive, self.SceneNumber
+        )
     }
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -10184,7 +10166,11 @@ impl crate::specific::SpecificDataPoint for DPT_26_x {
 }
 impl Display for DPT_26_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{}/{}/{}", self.reserved, self.sceneisinactive, self.SceneNumber)
+        write!(
+            f,
+            "{}/{}/{}",
+            self.reserved, self.sceneisinactive, self.SceneNumber
+        )
     }
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -10486,17 +10472,15 @@ impl crate::specific::SpecificDataPoint for DPT_28_1 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_28_1({
-                    let mut buffer = [0u8; 2048];
-                    reader.read_bytes(&mut buffer).unwrap();
-                    let end = buffer
-                        .iter()
-                        .position(|&c| c == b'\0')
-                        .unwrap_or(buffer.len());
-                    UTF_8.decode(&buffer[0..end], DecoderTrap::Replace).unwrap()
-                }),
-            )
+            Ok(DPT_28_1({
+                let mut buffer = [0u8; 2048];
+                reader.read_bytes(&mut buffer).unwrap();
+                let end = buffer
+                    .iter()
+                    .position(|&c| c == b'\0')
+                    .unwrap_or(buffer.len());
+                UTF_8.decode(&buffer[0..end], DecoderTrap::Replace).unwrap()
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -10524,17 +10508,15 @@ impl crate::specific::SpecificDataPoint for DPT_28_x {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_28_x({
-                    let mut buffer = [0u8; 2048];
-                    reader.read_bytes(&mut buffer).unwrap();
-                    let end = buffer
-                        .iter()
-                        .position(|&c| c == b'\0')
-                        .unwrap_or(buffer.len());
-                    UTF_8.decode(&buffer[0..end], DecoderTrap::Replace).unwrap()
-                }),
-            )
+            Ok(DPT_28_x({
+                let mut buffer = [0u8; 2048];
+                reader.read_bytes(&mut buffer).unwrap();
+                let end = buffer
+                    .iter()
+                    .position(|&c| c == b'\0')
+                    .unwrap_or(buffer.len());
+                UTF_8.decode(&buffer[0..end], DecoderTrap::Replace).unwrap()
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -10747,19 +10729,32 @@ impl crate::specific::SpecificDataPoint for DPT_30_1010 {
 impl Display for DPT_30_1010 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}",
-            self.Activationstateofchannel, self.Activationstateofchannel2, self
-            .Activationstateofchannel3, self.Activationstateofchannel4, self
-            .Activationstateofchannel5, self.Activationstateofchannel6, self
-            .Activationstateofchannel7, self.Activationstateofchannel8, self
-            .Activationstateofchannel9, self.Activationstateofchannel10, self
-            .Activationstateofchannel11, self.Activationstateofchannel12, self
-            .Activationstateofchannel13, self.Activationstateofchannel14, self
-            .Activationstateofchannel15, self.Activationstateofchannel16, self
-            .Activationstateofchannel17, self.Activationstateofchannel18, self
-            .Activationstateofchannel19, self.Activationstateofchannel20, self
-            .Activationstateofchannel21, self.Activationstateofchannel22, self
-            .Activationstateofchannel23, self.Activationstateofchannel24
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.Activationstateofchannel,
+            self.Activationstateofchannel2,
+            self.Activationstateofchannel3,
+            self.Activationstateofchannel4,
+            self.Activationstateofchannel5,
+            self.Activationstateofchannel6,
+            self.Activationstateofchannel7,
+            self.Activationstateofchannel8,
+            self.Activationstateofchannel9,
+            self.Activationstateofchannel10,
+            self.Activationstateofchannel11,
+            self.Activationstateofchannel12,
+            self.Activationstateofchannel13,
+            self.Activationstateofchannel14,
+            self.Activationstateofchannel15,
+            self.Activationstateofchannel16,
+            self.Activationstateofchannel17,
+            self.Activationstateofchannel18,
+            self.Activationstateofchannel19,
+            self.Activationstateofchannel20,
+            self.Activationstateofchannel21,
+            self.Activationstateofchannel22,
+            self.Activationstateofchannel23,
+            self.Activationstateofchannel24
         )
     }
 }
@@ -10861,19 +10856,32 @@ impl crate::specific::SpecificDataPoint for DPT_30_x {
 impl Display for DPT_30_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}",
-            self.Activationstateofchannel, self.Activationstateofchannel2, self
-            .Activationstateofchannel3, self.Activationstateofchannel4, self
-            .Activationstateofchannel5, self.Activationstateofchannel6, self
-            .Activationstateofchannel7, self.Activationstateofchannel8, self
-            .Activationstateofchannel9, self.Activationstateofchannel10, self
-            .Activationstateofchannel11, self.Activationstateofchannel12, self
-            .Activationstateofchannel13, self.Activationstateofchannel14, self
-            .Activationstateofchannel15, self.Activationstateofchannel16, self
-            .Activationstateofchannel17, self.Activationstateofchannel18, self
-            .Activationstateofchannel19, self.Activationstateofchannel20, self
-            .Activationstateofchannel21, self.Activationstateofchannel22, self
-            .Activationstateofchannel23, self.Activationstateofchannel24
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.Activationstateofchannel,
+            self.Activationstateofchannel2,
+            self.Activationstateofchannel3,
+            self.Activationstateofchannel4,
+            self.Activationstateofchannel5,
+            self.Activationstateofchannel6,
+            self.Activationstateofchannel7,
+            self.Activationstateofchannel8,
+            self.Activationstateofchannel9,
+            self.Activationstateofchannel10,
+            self.Activationstateofchannel11,
+            self.Activationstateofchannel12,
+            self.Activationstateofchannel13,
+            self.Activationstateofchannel14,
+            self.Activationstateofchannel15,
+            self.Activationstateofchannel16,
+            self.Activationstateofchannel17,
+            self.Activationstateofchannel18,
+            self.Activationstateofchannel19,
+            self.Activationstateofchannel20,
+            self.Activationstateofchannel21,
+            self.Activationstateofchannel22,
+            self.Activationstateofchannel23,
+            self.Activationstateofchannel24
         )
     }
 }
@@ -11100,9 +11108,17 @@ impl crate::specific::SpecificDataPoint for DPT_207_600 {
 impl Display for DPT_207_600 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}", self.ActualValue, self.Failure, self
-            .LocalOverride, self.Dimming, self.StaircaseLightingFunction, self
-            .NightModeActive, self.Forced, self.Locked, self.ValidActualValue
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.ActualValue,
+            self.Failure,
+            self.LocalOverride,
+            self.Dimming,
+            self.StaircaseLightingFunction,
+            self.NightModeActive,
+            self.Forced,
+            self.Locked,
+            self.ValidActualValue
         )
     }
 }
@@ -11159,9 +11175,17 @@ impl crate::specific::SpecificDataPoint for DPT_207_x {
 impl Display for DPT_207_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}", self.ActualValue, self.Failure, self
-            .LocalOverride, self.Dimming, self.StaircaseLightingFunction, self
-            .NightModeActive, self.Forced, self.Locked, self.ValidActualValue
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.ActualValue,
+            self.Failure,
+            self.LocalOverride,
+            self.Dimming,
+            self.StaircaseLightingFunction,
+            self.NightModeActive,
+            self.Forced,
+            self.Locked,
+            self.ValidActualValue
         )
     }
 }
@@ -11199,7 +11223,11 @@ impl crate::specific::SpecificDataPoint for DPT_217_1 {
 }
 impl Display for DPT_217_1 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{}/{}/{}", self.MagicNumber, self.VersionNumber, self.RevisionNumber)
+        write!(
+            f,
+            "{}/{}/{}",
+            self.MagicNumber, self.VersionNumber, self.RevisionNumber
+        )
     }
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -11236,7 +11264,11 @@ impl crate::specific::SpecificDataPoint for DPT_217_x {
 }
 impl Display for DPT_217_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{}/{}/{}", self.MagicNumber, self.VersionNumber, self.RevisionNumber)
+        write!(
+            f,
+            "{}/{}/{}",
+            self.MagicNumber, self.VersionNumber, self.RevisionNumber
+        )
     }
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -11310,10 +11342,21 @@ impl crate::specific::SpecificDataPoint for DPT_219_1 {
 impl Display for DPT_219_1 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}", self.LogNumber, self
-            .AlarmPriority, self.ApplicationArea, self.ErrorClass, self.reserved, self
-            .ErrorCodeSup, self.AlarmTextSup, self.TimeStampSup, self.AckSup, self
-            .reserved2, self.Locked, self.AlarmUnAck, self.InAlarm
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.LogNumber,
+            self.AlarmPriority,
+            self.ApplicationArea,
+            self.ErrorClass,
+            self.reserved,
+            self.ErrorCodeSup,
+            self.AlarmTextSup,
+            self.TimeStampSup,
+            self.AckSup,
+            self.reserved2,
+            self.Locked,
+            self.AlarmUnAck,
+            self.InAlarm
         )
     }
 }
@@ -11388,10 +11431,21 @@ impl crate::specific::SpecificDataPoint for DPT_219_x {
 impl Display for DPT_219_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}", self.LogNumber, self
-            .AlarmPriority, self.ApplicationArea, self.ErrorClass, self.reserved, self
-            .ErrorCodeSup, self.AlarmTextSup, self.TimeStampSup, self.AckSup, self
-            .reserved2, self.Locked, self.AlarmUnAck, self.InAlarm
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.LogNumber,
+            self.AlarmPriority,
+            self.ApplicationArea,
+            self.ErrorClass,
+            self.reserved,
+            self.ErrorCodeSup,
+            self.AlarmTextSup,
+            self.TimeStampSup,
+            self.AckSup,
+            self.reserved2,
+            self.Locked,
+            self.AlarmUnAck,
+            self.InAlarm
         )
     }
 }
@@ -11408,9 +11462,15 @@ impl crate::specific::SpecificDataPoint for DPT_222_100 {
     fn to_data_point(&self) -> DataPoint {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
-        writer.write(16u8 as u32, encode_knxf16(self.TempSetpComf)).unwrap();
-        writer.write(16u8 as u32, encode_knxf16(self.TempSetpStdby)).unwrap();
-        writer.write(16u8 as u32, encode_knxf16(self.TempSetpEco)).unwrap();
+        writer
+            .write(16u8 as u32, encode_knxf16(self.TempSetpComf))
+            .unwrap();
+        writer
+            .write(16u8 as u32, encode_knxf16(self.TempSetpStdby))
+            .unwrap();
+        writer
+            .write(16u8 as u32, encode_knxf16(self.TempSetpEco))
+            .unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
     }
@@ -11442,8 +11502,9 @@ impl crate::specific::SpecificDataPoint for DPT_222_100 {
 impl Display for DPT_222_100 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{:.1}/{:.1}/{:.1}", self.TempSetpComf, self.TempSetpStdby, self
-            .TempSetpEco
+            f,
+            "{:.1}/{:.1}/{:.1}",
+            self.TempSetpComf, self.TempSetpStdby, self.TempSetpEco
         )
     }
 }
@@ -11460,9 +11521,15 @@ impl crate::specific::SpecificDataPoint for DPT_222_101 {
     fn to_data_point(&self) -> DataPoint {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
-        writer.write(16u8 as u32, encode_knxf16(self.TempSetpShiftComf)).unwrap();
-        writer.write(16u8 as u32, encode_knxf16(self.TempSetpShiftStdby)).unwrap();
-        writer.write(16u8 as u32, encode_knxf16(self.TempSetpShiftEco)).unwrap();
+        writer
+            .write(16u8 as u32, encode_knxf16(self.TempSetpShiftComf))
+            .unwrap();
+        writer
+            .write(16u8 as u32, encode_knxf16(self.TempSetpShiftStdby))
+            .unwrap();
+        writer
+            .write(16u8 as u32, encode_knxf16(self.TempSetpShiftEco))
+            .unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
     }
@@ -11494,8 +11561,9 @@ impl crate::specific::SpecificDataPoint for DPT_222_101 {
 impl Display for DPT_222_101 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{:.1}/{:.1}/{:.1}", self.TempSetpShiftComf, self.TempSetpShiftStdby, self
-            .TempSetpShiftEco
+            f,
+            "{:.1}/{:.1}/{:.1}",
+            self.TempSetpShiftComf, self.TempSetpShiftStdby, self.TempSetpShiftEco
         )
     }
 }
@@ -11512,9 +11580,15 @@ impl crate::specific::SpecificDataPoint for DPT_222_x {
     fn to_data_point(&self) -> DataPoint {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
-        writer.write(16u8 as u32, encode_knxf16(self.TempSetpComf)).unwrap();
-        writer.write(16u8 as u32, encode_knxf16(self.TempSetpStdby)).unwrap();
-        writer.write(16u8 as u32, encode_knxf16(self.TempSetpEco)).unwrap();
+        writer
+            .write(16u8 as u32, encode_knxf16(self.TempSetpComf))
+            .unwrap();
+        writer
+            .write(16u8 as u32, encode_knxf16(self.TempSetpStdby))
+            .unwrap();
+        writer
+            .write(16u8 as u32, encode_knxf16(self.TempSetpEco))
+            .unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
     }
@@ -11546,8 +11620,9 @@ impl crate::specific::SpecificDataPoint for DPT_222_x {
 impl Display for DPT_222_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{:.1}/{:.1}/{:.1}", self.TempSetpComf, self.TempSetpStdby, self
-            .TempSetpEco
+            f,
+            "{:.1}/{:.1}/{:.1}",
+            self.TempSetpComf, self.TempSetpStdby, self.TempSetpEco
         )
     }
 }
@@ -11706,8 +11781,16 @@ impl crate::specific::SpecificDataPoint for DPT_229_1 {
 impl Display for DPT_229_1 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}", self.CountVal, self.ValInfField, self.reserved,
-            self.AlarmUnAck, self.InAlarm, self.Overridden, self.Fault, self.OutOfService
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}",
+            self.CountVal,
+            self.ValInfField,
+            self.reserved,
+            self.AlarmUnAck,
+            self.InAlarm,
+            self.Overridden,
+            self.Fault,
+            self.OutOfService
         )
     }
 }
@@ -11764,8 +11847,16 @@ impl crate::specific::SpecificDataPoint for DPT_229_x {
 impl Display for DPT_229_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}", self.CountVal, self.ValInfField, self.reserved,
-            self.AlarmUnAck, self.InAlarm, self.Overridden, self.Fault, self.OutOfService
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}",
+            self.CountVal,
+            self.ValInfField,
+            self.reserved,
+            self.AlarmUnAck,
+            self.InAlarm,
+            self.Overridden,
+            self.Fault,
+            self.OutOfService
         )
     }
 }
@@ -11807,8 +11898,9 @@ impl crate::specific::SpecificDataPoint for DPT_230_1000 {
 impl Display for DPT_230_1000 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}", self.ManufactID, self.IdentNumber, self.Version, self
-            .Medium
+            f,
+            "{}/{}/{}/{}",
+            self.ManufactID, self.IdentNumber, self.Version, self.Medium
         )
     }
 }
@@ -11850,8 +11942,9 @@ impl crate::specific::SpecificDataPoint for DPT_230_x {
 impl Display for DPT_230_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}", self.ManufactID, self.IdentNumber, self.Version, self
-            .Medium
+            f,
+            "{}/{}/{}/{}",
+            self.ManufactID, self.IdentNumber, self.Version, self.Medium
         )
     }
 }
@@ -11938,7 +12031,9 @@ impl crate::specific::SpecificDataPoint for DPT_234_1 {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
         let mut buffer = vec![0u8; (16u16 / 8) as usize];
-        ASCII.encode_to(self.0.as_str(), EncoderTrap::Replace, &mut buffer).unwrap();
+        ASCII
+            .encode_to(self.0.as_str(), EncoderTrap::Replace, &mut buffer)
+            .unwrap();
         writer.write_bytes(&buffer).unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
@@ -11946,13 +12041,11 @@ impl crate::specific::SpecificDataPoint for DPT_234_1 {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_234_1({
-                    let mut value = [0u8; (16u16 / 8) as usize];
-                    reader.read_bytes(&mut value)?;
-                    ASCII.decode(&value, DecoderTrap::Replace).unwrap()
-                }),
-            )
+            Ok(DPT_234_1({
+                let mut value = [0u8; (16u16 / 8) as usize];
+                reader.read_bytes(&mut value)?;
+                ASCII.decode(&value, DecoderTrap::Replace).unwrap()
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -11972,7 +12065,9 @@ impl crate::specific::SpecificDataPoint for DPT_234_x {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
         let mut buffer = vec![0u8; (16u16 / 8) as usize];
-        ASCII.encode_to(self.0.as_str(), EncoderTrap::Replace, &mut buffer).unwrap();
+        ASCII
+            .encode_to(self.0.as_str(), EncoderTrap::Replace, &mut buffer)
+            .unwrap();
         writer.write_bytes(&buffer).unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
@@ -11980,13 +12075,11 @@ impl crate::specific::SpecificDataPoint for DPT_234_x {
     fn from_data_point(data: &DataPoint) -> Result<Self, Error> {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
-            Ok(
-                DPT_234_x({
-                    let mut value = [0u8; (16u16 / 8) as usize];
-                    reader.read_bytes(&mut value)?;
-                    ASCII.decode(&value, DecoderTrap::Replace).unwrap()
-                }),
-            )
+            Ok(DPT_234_x({
+                let mut value = [0u8; (16u16 / 8) as usize];
+                reader.read_bytes(&mut value)?;
+                ASCII.decode(&value, DecoderTrap::Replace).unwrap()
+            }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
         }
@@ -12012,7 +12105,9 @@ impl crate::specific::SpecificDataPoint for DPT_235_1 {
     fn to_data_point(&self) -> DataPoint {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
-        writer.write_signed(32u8 as u32, self.ActiveElectricalEnergy).unwrap();
+        writer
+            .write_signed(32u8 as u32, self.ActiveElectricalEnergy)
+            .unwrap();
         writer.write(8u8 as u32, self.Tariff).unwrap();
         writer.write(6u8 as u32, 0u32).unwrap();
         writer.write_bit(self.ElectricalEngergyValidity).unwrap();
@@ -12041,8 +12136,13 @@ impl crate::specific::SpecificDataPoint for DPT_235_1 {
 impl Display for DPT_235_1 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}", self.ActiveElectricalEnergy, self.Tariff, self.reserved,
-            self.ElectricalEngergyValidity, self.TariffValidity
+            f,
+            "{}/{}/{}/{}/{}",
+            self.ActiveElectricalEnergy,
+            self.Tariff,
+            self.reserved,
+            self.ElectricalEngergyValidity,
+            self.TariffValidity
         )
     }
 }
@@ -12061,7 +12161,9 @@ impl crate::specific::SpecificDataPoint for DPT_235_x {
     fn to_data_point(&self) -> DataPoint {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
-        writer.write_signed(32u8 as u32, self.ActiveElectricalEnergy).unwrap();
+        writer
+            .write_signed(32u8 as u32, self.ActiveElectricalEnergy)
+            .unwrap();
         writer.write(8u8 as u32, self.Tariff).unwrap();
         writer.write(6u8 as u32, 0u32).unwrap();
         writer.write_bit(self.ElectricalEngergyValidity).unwrap();
@@ -12090,8 +12192,13 @@ impl crate::specific::SpecificDataPoint for DPT_235_x {
 impl Display for DPT_235_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}", self.ActiveElectricalEnergy, self.Tariff, self.reserved,
-            self.ElectricalEngergyValidity, self.TariffValidity
+            f,
+            "{}/{}/{}/{}/{}",
+            self.ActiveElectricalEnergy,
+            self.Tariff,
+            self.reserved,
+            self.ElectricalEngergyValidity,
+            self.TariffValidity
         )
     }
 }
@@ -12130,8 +12237,9 @@ impl crate::specific::SpecificDataPoint for DPT_236_1 {
 impl Display for DPT_236_1 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}", self.deactivationofpriority, self.prioritylevel, self
-            .modelevel
+            f,
+            "{}/{}/{}",
+            self.deactivationofpriority, self.prioritylevel, self.modelevel
         )
     }
 }
@@ -12170,8 +12278,9 @@ impl crate::specific::SpecificDataPoint for DPT_236_x {
 impl Display for DPT_236_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}", self.deactivationofpriority, self.prioritylevel, self
-            .modelevel
+            f,
+            "{}/{}/{}",
+            self.deactivationofpriority, self.prioritylevel, self.modelevel
         )
     }
 }
@@ -12198,7 +12307,9 @@ impl crate::specific::SpecificDataPoint for DPT_237_600 {
         writer.write_bit(self.LampFailure).unwrap();
         writer.write_bit(self.ReadorResponse).unwrap();
         writer.write_bit(self.AddressIndicator).unwrap();
-        writer.write(6u8 as u32, self.DALIDeviceAddressorDALIGroupAddress).unwrap();
+        writer
+            .write(6u8 as u32, self.DALIDeviceAddressorDALIGroupAddress)
+            .unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
     }
@@ -12225,9 +12336,15 @@ impl crate::specific::SpecificDataPoint for DPT_237_600 {
 impl Display for DPT_237_600 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}", self.reserved, self.Convertorerror, self
-            .BallastFailure, self.LampFailure, self.ReadorResponse, self
-            .AddressIndicator, self.DALIDeviceAddressorDALIGroupAddress
+            f,
+            "{}/{}/{}/{}/{}/{}/{}",
+            self.reserved,
+            self.Convertorerror,
+            self.BallastFailure,
+            self.LampFailure,
+            self.ReadorResponse,
+            self.AddressIndicator,
+            self.DALIDeviceAddressorDALIGroupAddress
         )
     }
 }
@@ -12254,7 +12371,9 @@ impl crate::specific::SpecificDataPoint for DPT_237_x {
         writer.write_bit(self.LampFailure).unwrap();
         writer.write_bit(self.ReadorResponse).unwrap();
         writer.write_bit(self.AddressIndicator).unwrap();
-        writer.write(6u8 as u32, self.DALIDeviceAddressorDALIGroupAddress).unwrap();
+        writer
+            .write(6u8 as u32, self.DALIDeviceAddressorDALIGroupAddress)
+            .unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
     }
@@ -12281,9 +12400,15 @@ impl crate::specific::SpecificDataPoint for DPT_237_x {
 impl Display for DPT_237_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}", self.reserved, self.Convertorerror, self
-            .BallastFailure, self.LampFailure, self.ReadorResponse, self
-            .AddressIndicator, self.DALIDeviceAddressorDALIGroupAddress
+            f,
+            "{}/{}/{}/{}/{}/{}/{}",
+            self.reserved,
+            self.Convertorerror,
+            self.BallastFailure,
+            self.LampFailure,
+            self.ReadorResponse,
+            self.AddressIndicator,
+            self.DALIDeviceAddressorDALIGroupAddress
         )
     }
 }
@@ -12321,7 +12446,11 @@ impl crate::specific::SpecificDataPoint for DPT_238_600 {
 }
 impl Display for DPT_238_600 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{}/{}/{}", self.BallastFailure, self.LampFailure, self.DeviceAddress)
+        write!(
+            f,
+            "{}/{}/{}",
+            self.BallastFailure, self.LampFailure, self.DeviceAddress
+        )
     }
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -12358,7 +12487,11 @@ impl crate::specific::SpecificDataPoint for DPT_238_x {
 }
 impl Display for DPT_238_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{}/{}/{}", self.BallastFailure, self.LampFailure, self.DeviceAddress)
+        write!(
+            f,
+            "{}/{}/{}",
+            self.BallastFailure, self.LampFailure, self.DeviceAddress
+        )
     }
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -12405,8 +12538,13 @@ impl crate::specific::SpecificDataPoint for DPT_240_800 {
 impl Display for DPT_240_800 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}", self.HeightPosition, self.SlatsPosition, self.reserved,
-            self.ValiditySlatsPosition, self.ValidityHeightPosition
+            f,
+            "{}/{}/{}/{}/{}",
+            self.HeightPosition,
+            self.SlatsPosition,
+            self.reserved,
+            self.ValiditySlatsPosition,
+            self.ValidityHeightPosition
         )
     }
 }
@@ -12454,8 +12592,13 @@ impl crate::specific::SpecificDataPoint for DPT_240_x {
 impl Display for DPT_240_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}", self.HeightPosition, self.SlatsPosition, self.reserved,
-            self.ValiditySlatsPosition, self.ValidityHeightPosition
+            f,
+            "{}/{}/{}/{}/{}",
+            self.HeightPosition,
+            self.SlatsPosition,
+            self.reserved,
+            self.ValiditySlatsPosition,
+            self.ValidityHeightPosition
         )
     }
 }
@@ -12490,17 +12633,31 @@ impl crate::specific::SpecificDataPoint for DPT_241_800 {
         writer.write_bit(self.Validityslatspos).unwrap();
         writer.write_bit(self.Validityheightpos).unwrap();
         writer.write(3u8 as u32, 0u32).unwrap();
-        writer.write_bit(self.Generalfailureoftheactuatororthedrive).unwrap();
+        writer
+            .write_bit(self.Generalfailureoftheactuatororthedrive)
+            .unwrap();
         writer
             .write_bit(self.Actuatorsetvalueislocallyoverriddenegviaalocaluserinterface)
             .unwrap();
-        writer.write_bit(self.MovementislockedegbyDeviceLockedinput).unwrap();
-        writer.write_bit(self.UpdownpositionisforcedbyMoveUpDownForcedinput).unwrap();
-        writer.write_bit(self.AtleastoneoftheinputsWindRainFrostAlarmisinalarm).unwrap();
-        writer.write_bit(self.Restrictionofslatsheightposposcannotbereached).unwrap();
-        writer.write_bit(self.Restrictionoftargetheightposposcannotbereached).unwrap();
+        writer
+            .write_bit(self.MovementislockedegbyDeviceLockedinput)
+            .unwrap();
+        writer
+            .write_bit(self.UpdownpositionisforcedbyMoveUpDownForcedinput)
+            .unwrap();
+        writer
+            .write_bit(self.AtleastoneoftheinputsWindRainFrostAlarmisinalarm)
+            .unwrap();
+        writer
+            .write_bit(self.Restrictionofslatsheightposposcannotbereached)
+            .unwrap();
+        writer
+            .write_bit(self.Restrictionoftargetheightposposcannotbereached)
+            .unwrap();
         writer.write_bit(self.Targetposdrive).unwrap();
-        writer.write_bit(self.Lowerpredefposreachedtypheightslatsangle).unwrap();
+        writer
+            .write_bit(self.Lowerpredefposreachedtypheightslatsangle)
+            .unwrap();
         writer.write_bit(self.Lowerendposreached).unwrap();
         writer.write_bit(self.Upperendposreached).unwrap();
         writer.flush().unwrap();
@@ -12519,8 +12676,7 @@ impl crate::specific::SpecificDataPoint for DPT_241_800 {
                     Reserved::new()
                 },
                 Generalfailureoftheactuatororthedrive: reader.read_bit()?,
-                Actuatorsetvalueislocallyoverriddenegviaalocaluserinterface: reader
-                    .read_bit()?,
+                Actuatorsetvalueislocallyoverriddenegviaalocaluserinterface: reader.read_bit()?,
                 MovementislockedegbyDeviceLockedinput: reader.read_bit()?,
                 UpdownpositionisforcedbyMoveUpDownForcedinput: reader.read_bit()?,
                 AtleastoneoftheinputsWindRainFrostAlarmisinalarm: reader.read_bit()?,
@@ -12539,17 +12695,24 @@ impl crate::specific::SpecificDataPoint for DPT_241_800 {
 impl Display for DPT_241_800 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}", self.HeightPosition,
-            self.SlatsPosition, self.Validityslatspos, self.Validityheightpos, self
-            .reserved, self.Generalfailureoftheactuatororthedrive, self
-            .Actuatorsetvalueislocallyoverriddenegviaalocaluserinterface, self
-            .MovementislockedegbyDeviceLockedinput, self
-            .UpdownpositionisforcedbyMoveUpDownForcedinput, self
-            .AtleastoneoftheinputsWindRainFrostAlarmisinalarm, self
-            .Restrictionofslatsheightposposcannotbereached, self
-            .Restrictionoftargetheightposposcannotbereached, self.Targetposdrive, self
-            .Lowerpredefposreachedtypheightslatsangle, self.Lowerendposreached, self
-            .Upperendposreached
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.HeightPosition,
+            self.SlatsPosition,
+            self.Validityslatspos,
+            self.Validityheightpos,
+            self.reserved,
+            self.Generalfailureoftheactuatororthedrive,
+            self.Actuatorsetvalueislocallyoverriddenegviaalocaluserinterface,
+            self.MovementislockedegbyDeviceLockedinput,
+            self.UpdownpositionisforcedbyMoveUpDownForcedinput,
+            self.AtleastoneoftheinputsWindRainFrostAlarmisinalarm,
+            self.Restrictionofslatsheightposposcannotbereached,
+            self.Restrictionoftargetheightposposcannotbereached,
+            self.Targetposdrive,
+            self.Lowerpredefposreachedtypheightslatsangle,
+            self.Lowerendposreached,
+            self.Upperendposreached
         )
     }
 }
@@ -12584,17 +12747,31 @@ impl crate::specific::SpecificDataPoint for DPT_241_x {
         writer.write_bit(self.Validityslatspos).unwrap();
         writer.write_bit(self.Validityheightpos).unwrap();
         writer.write(3u8 as u32, 0u32).unwrap();
-        writer.write_bit(self.Generalfailureoftheactuatororthedrive).unwrap();
+        writer
+            .write_bit(self.Generalfailureoftheactuatororthedrive)
+            .unwrap();
         writer
             .write_bit(self.Actuatorsetvalueislocallyoverriddenegviaalocaluserinterface)
             .unwrap();
-        writer.write_bit(self.MovementislockedegbyDeviceLockedinput).unwrap();
-        writer.write_bit(self.UpdownpositionisforcedbyMoveUpDownForcedinput).unwrap();
-        writer.write_bit(self.AtleastoneoftheinputsWindRainFrostAlarmisinalarm).unwrap();
-        writer.write_bit(self.Restrictionofslatsheightposposcannotbereached).unwrap();
-        writer.write_bit(self.Restrictionoftargetheightposposcannotbereached).unwrap();
+        writer
+            .write_bit(self.MovementislockedegbyDeviceLockedinput)
+            .unwrap();
+        writer
+            .write_bit(self.UpdownpositionisforcedbyMoveUpDownForcedinput)
+            .unwrap();
+        writer
+            .write_bit(self.AtleastoneoftheinputsWindRainFrostAlarmisinalarm)
+            .unwrap();
+        writer
+            .write_bit(self.Restrictionofslatsheightposposcannotbereached)
+            .unwrap();
+        writer
+            .write_bit(self.Restrictionoftargetheightposposcannotbereached)
+            .unwrap();
         writer.write_bit(self.Targetposdrive).unwrap();
-        writer.write_bit(self.Lowerpredefposreachedtypheightslatsangle).unwrap();
+        writer
+            .write_bit(self.Lowerpredefposreachedtypheightslatsangle)
+            .unwrap();
         writer.write_bit(self.Lowerendposreached).unwrap();
         writer.write_bit(self.Upperendposreached).unwrap();
         writer.flush().unwrap();
@@ -12613,8 +12790,7 @@ impl crate::specific::SpecificDataPoint for DPT_241_x {
                     Reserved::new()
                 },
                 Generalfailureoftheactuatororthedrive: reader.read_bit()?,
-                Actuatorsetvalueislocallyoverriddenegviaalocaluserinterface: reader
-                    .read_bit()?,
+                Actuatorsetvalueislocallyoverriddenegviaalocaluserinterface: reader.read_bit()?,
                 MovementislockedegbyDeviceLockedinput: reader.read_bit()?,
                 UpdownpositionisforcedbyMoveUpDownForcedinput: reader.read_bit()?,
                 AtleastoneoftheinputsWindRainFrostAlarmisinalarm: reader.read_bit()?,
@@ -12633,17 +12809,24 @@ impl crate::specific::SpecificDataPoint for DPT_241_x {
 impl Display for DPT_241_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}", self.HeightPosition,
-            self.SlatsPosition, self.Validityslatspos, self.Validityheightpos, self
-            .reserved, self.Generalfailureoftheactuatororthedrive, self
-            .Actuatorsetvalueislocallyoverriddenegviaalocaluserinterface, self
-            .MovementislockedegbyDeviceLockedinput, self
-            .UpdownpositionisforcedbyMoveUpDownForcedinput, self
-            .AtleastoneoftheinputsWindRainFrostAlarmisinalarm, self
-            .Restrictionofslatsheightposposcannotbereached, self
-            .Restrictionoftargetheightposposcannotbereached, self.Targetposdrive, self
-            .Lowerpredefposreachedtypheightslatsangle, self.Lowerendposreached, self
-            .Upperendposreached
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.HeightPosition,
+            self.SlatsPosition,
+            self.Validityslatspos,
+            self.Validityheightpos,
+            self.reserved,
+            self.Generalfailureoftheactuatororthedrive,
+            self.Actuatorsetvalueislocallyoverriddenegviaalocaluserinterface,
+            self.MovementislockedegbyDeviceLockedinput,
+            self.UpdownpositionisforcedbyMoveUpDownForcedinput,
+            self.AtleastoneoftheinputsWindRainFrostAlarmisinalarm,
+            self.Restrictionofslatsheightposposcannotbereached,
+            self.Restrictionoftargetheightposposcannotbereached,
+            self.Targetposdrive,
+            self.Lowerpredefposreachedtypheightslatsangle,
+            self.Lowerendposreached,
+            self.Upperendposreached
         )
     }
 }
@@ -12694,8 +12877,14 @@ impl crate::specific::SpecificDataPoint for DPT_242_600 {
 impl Display for DPT_242_600 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}", self.xaxis, self.yaxis, self.brightness, self
-            .reserved, self.Validityxy, self.Validitybrightness
+            f,
+            "{}/{}/{}/{}/{}/{}",
+            self.xaxis,
+            self.yaxis,
+            self.brightness,
+            self.reserved,
+            self.Validityxy,
+            self.Validitybrightness
         )
     }
 }
@@ -12746,8 +12935,14 @@ impl crate::specific::SpecificDataPoint for DPT_242_x {
 impl Display for DPT_242_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}", self.xaxis, self.yaxis, self.brightness, self
-            .reserved, self.Validityxy, self.Validitybrightness
+            f,
+            "{}/{}/{}/{}/{}/{}",
+            self.xaxis,
+            self.yaxis,
+            self.brightness,
+            self.reserved,
+            self.Validityxy,
+            self.Validitybrightness
         )
     }
 }
@@ -12770,14 +12965,19 @@ impl crate::specific::SpecificDataPoint for DPT_244_600 {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
         writer
-            .write(4u8 as u32, self.ConverterModeaccordingtotheDALIconverterstatemachine)
+            .write(
+                4u8 as u32,
+                self.ConverterModeaccordingtotheDALIconverterstatemachine,
+            )
             .unwrap();
         writer.write(2u8 as u32, 0u32).unwrap();
         writer.write_bit(self.HS).unwrap();
         writer.write_bit(self.HS2).unwrap();
         writer.write(2u8 as u32, self.FunctionTestPending).unwrap();
         writer.write(2u8 as u32, self.DurationTestPending).unwrap();
-        writer.write(2u8 as u32, self.PartialDurationTestPending).unwrap();
+        writer
+            .write(2u8 as u32, self.PartialDurationTestPending)
+            .unwrap();
         writer.write(2u8 as u32, self.ConverterFailure).unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
@@ -12786,8 +12986,7 @@ impl crate::specific::SpecificDataPoint for DPT_244_600 {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
             Ok(DPT_244_600 {
-                ConverterModeaccordingtotheDALIconverterstatemachine: reader
-                    .read(4u8 as u32)?,
+                ConverterModeaccordingtotheDALIconverterstatemachine: reader.read(4u8 as u32)?,
                 reserved: {
                     reader.skip(2u8 as u32)?;
                     Reserved::new()
@@ -12807,10 +13006,16 @@ impl crate::specific::SpecificDataPoint for DPT_244_600 {
 impl Display for DPT_244_600 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}", self
-            .ConverterModeaccordingtotheDALIconverterstatemachine, self.reserved, self
-            .HS, self.HS2, self.FunctionTestPending, self.DurationTestPending, self
-            .PartialDurationTestPending, self.ConverterFailure
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}",
+            self.ConverterModeaccordingtotheDALIconverterstatemachine,
+            self.reserved,
+            self.HS,
+            self.HS2,
+            self.FunctionTestPending,
+            self.DurationTestPending,
+            self.PartialDurationTestPending,
+            self.ConverterFailure
         )
     }
 }
@@ -12833,14 +13038,19 @@ impl crate::specific::SpecificDataPoint for DPT_244_x {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
         writer
-            .write(4u8 as u32, self.ConverterModeaccordingtotheDALIconverterstatemachine)
+            .write(
+                4u8 as u32,
+                self.ConverterModeaccordingtotheDALIconverterstatemachine,
+            )
             .unwrap();
         writer.write(2u8 as u32, 0u32).unwrap();
         writer.write_bit(self.HS).unwrap();
         writer.write_bit(self.HS2).unwrap();
         writer.write(2u8 as u32, self.FunctionTestPending).unwrap();
         writer.write(2u8 as u32, self.DurationTestPending).unwrap();
-        writer.write(2u8 as u32, self.PartialDurationTestPending).unwrap();
+        writer
+            .write(2u8 as u32, self.PartialDurationTestPending)
+            .unwrap();
         writer.write(2u8 as u32, self.ConverterFailure).unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
@@ -12849,8 +13059,7 @@ impl crate::specific::SpecificDataPoint for DPT_244_x {
         if let DataPoint::Long(bytes) = data {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
             Ok(DPT_244_x {
-                ConverterModeaccordingtotheDALIconverterstatemachine: reader
-                    .read(4u8 as u32)?,
+                ConverterModeaccordingtotheDALIconverterstatemachine: reader.read(4u8 as u32)?,
                 reserved: {
                     reader.skip(2u8 as u32)?;
                     Reserved::new()
@@ -12870,10 +13079,16 @@ impl crate::specific::SpecificDataPoint for DPT_244_x {
 impl Display for DPT_244_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}", self
-            .ConverterModeaccordingtotheDALIconverterstatemachine, self.reserved, self
-            .HS, self.HS2, self.FunctionTestPending, self.DurationTestPending, self
-            .PartialDurationTestPending, self.ConverterFailure
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}",
+            self.ConverterModeaccordingtotheDALIconverterstatemachine,
+            self.reserved,
+            self.HS,
+            self.HS2,
+            self.FunctionTestPending,
+            self.DurationTestPending,
+            self.PartialDurationTestPending,
+            self.ConverterFailure
         )
     }
 }
@@ -12939,8 +13154,18 @@ impl crate::specific::SpecificDataPoint for DPT_245_600 {
 impl Display for DPT_245_600 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}", self.LTRF, self.LTRD, self.LTRP, self
-            .reserved, self.SF, self.SD, self.SP, self.reserved2, self.LDTR, self.LPDTR
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.LTRF,
+            self.LTRD,
+            self.LTRP,
+            self.reserved,
+            self.SF,
+            self.SD,
+            self.SP,
+            self.reserved2,
+            self.LDTR,
+            self.LPDTR
         )
     }
 }
@@ -13006,8 +13231,18 @@ impl crate::specific::SpecificDataPoint for DPT_245_x {
 impl Display for DPT_245_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}", self.LTRF, self.LTRD, self.LTRP, self
-            .reserved, self.SF, self.SD, self.SP, self.reserved2, self.LDTR, self.LPDTR
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.LTRF,
+            self.LTRD,
+            self.LTRP,
+            self.reserved,
+            self.SF,
+            self.SD,
+            self.SP,
+            self.reserved2,
+            self.LDTR,
+            self.LPDTR
         )
     }
 }
@@ -13055,8 +13290,13 @@ impl crate::specific::SpecificDataPoint for DPT_246_600 {
 impl Display for DPT_246_600 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}", self.reserved, self.BatteryFullyCharged, self
-            .BatteryDurationFailure, self.BatteryFailure, self.BatteryChargeLevel
+            f,
+            "{}/{}/{}/{}/{}",
+            self.reserved,
+            self.BatteryFullyCharged,
+            self.BatteryDurationFailure,
+            self.BatteryFailure,
+            self.BatteryChargeLevel
         )
     }
 }
@@ -13104,8 +13344,13 @@ impl crate::specific::SpecificDataPoint for DPT_246_x {
 impl Display for DPT_246_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}", self.reserved, self.BatteryFullyCharged, self
-            .BatteryDurationFailure, self.BatteryFailure, self.BatteryChargeLevel
+            f,
+            "{}/{}/{}/{}/{}",
+            self.reserved,
+            self.BatteryFullyCharged,
+            self.BatteryDurationFailure,
+            self.BatteryFailure,
+            self.BatteryChargeLevel
         )
     }
 }
@@ -13131,8 +13376,12 @@ impl crate::specific::SpecificDataPoint for DPT_249_600 {
         writer.write(8u8 as u32, self.int3).unwrap();
         writer.write(5u8 as u32, 0u32).unwrap();
         writer.write_bit(self.validityoftheTimePeriod).unwrap();
-        writer.write_bit(self.validityoftheAbsoluteColourTemperature).unwrap();
-        writer.write_bit(self.validityoftheabsolutebrightness).unwrap();
+        writer
+            .write_bit(self.validityoftheAbsoluteColourTemperature)
+            .unwrap();
+        writer
+            .write_bit(self.validityoftheabsolutebrightness)
+            .unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
     }
@@ -13159,8 +13408,14 @@ impl crate::specific::SpecificDataPoint for DPT_249_600 {
 impl Display for DPT_249_600 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}", self.int, self.int2, self.int3, self.reserved,
-            self.validityoftheTimePeriod, self.validityoftheAbsoluteColourTemperature,
+            f,
+            "{}/{}/{}/{}/{}/{}/{}",
+            self.int,
+            self.int2,
+            self.int3,
+            self.reserved,
+            self.validityoftheTimePeriod,
+            self.validityoftheAbsoluteColourTemperature,
             self.validityoftheabsolutebrightness
         )
     }
@@ -13187,8 +13442,12 @@ impl crate::specific::SpecificDataPoint for DPT_249_x {
         writer.write(8u8 as u32, self.int3).unwrap();
         writer.write(5u8 as u32, 0u32).unwrap();
         writer.write_bit(self.validityoftheTimePeriod).unwrap();
-        writer.write_bit(self.validityoftheAbsoluteColourTemperature).unwrap();
-        writer.write_bit(self.validityoftheabsolutebrightness).unwrap();
+        writer
+            .write_bit(self.validityoftheAbsoluteColourTemperature)
+            .unwrap();
+        writer
+            .write_bit(self.validityoftheabsolutebrightness)
+            .unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
     }
@@ -13215,8 +13474,14 @@ impl crate::specific::SpecificDataPoint for DPT_249_x {
 impl Display for DPT_249_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}", self.int, self.int2, self.int3, self.reserved,
-            self.validityoftheTimePeriod, self.validityoftheAbsoluteColourTemperature,
+            f,
+            "{}/{}/{}/{}/{}/{}/{}",
+            self.int,
+            self.int2,
+            self.int3,
+            self.reserved,
+            self.validityoftheTimePeriod,
+            self.validityoftheAbsoluteColourTemperature,
             self.validityoftheabsolutebrightness
         )
     }
@@ -13242,13 +13507,17 @@ impl crate::specific::SpecificDataPoint for DPT_250_600 {
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
         writer.write(4u8 as u32, 0u32).unwrap();
         writer.write_bit(self.CCT).unwrap();
-        writer.write(3u8 as u32, self.StepCodeColourTemperature).unwrap();
+        writer
+            .write(3u8 as u32, self.StepCodeColourTemperature)
+            .unwrap();
         writer.write(4u8 as u32, 0u32).unwrap();
         writer.write_bit(self.CB).unwrap();
         writer.write(3u8 as u32, self.StepCodeBrightness).unwrap();
         writer.write(6u8 as u32, 0u32).unwrap();
         writer.write_bit(self.CCTandStepCodeColourValidity).unwrap();
-        writer.write_bit(self.CBandStepCodeBrightnessValidity).unwrap();
+        writer
+            .write_bit(self.CBandStepCodeBrightnessValidity)
+            .unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
     }
@@ -13283,10 +13552,17 @@ impl crate::specific::SpecificDataPoint for DPT_250_600 {
 impl Display for DPT_250_600 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}", self.reserved, self.CCT, self
-            .StepCodeColourTemperature, self.reserved2, self.CB, self.StepCodeBrightness,
-            self.reserved3, self.CCTandStepCodeColourValidity, self
-            .CBandStepCodeBrightnessValidity
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.reserved,
+            self.CCT,
+            self.StepCodeColourTemperature,
+            self.reserved2,
+            self.CB,
+            self.StepCodeBrightness,
+            self.reserved3,
+            self.CCTandStepCodeColourValidity,
+            self.CBandStepCodeBrightnessValidity
         )
     }
 }
@@ -13311,13 +13587,17 @@ impl crate::specific::SpecificDataPoint for DPT_250_x {
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
         writer.write(4u8 as u32, 0u32).unwrap();
         writer.write_bit(self.CCT).unwrap();
-        writer.write(3u8 as u32, self.StepCodeColourTemperature).unwrap();
+        writer
+            .write(3u8 as u32, self.StepCodeColourTemperature)
+            .unwrap();
         writer.write(4u8 as u32, 0u32).unwrap();
         writer.write_bit(self.CB).unwrap();
         writer.write(3u8 as u32, self.StepCodeBrightness).unwrap();
         writer.write(6u8 as u32, 0u32).unwrap();
         writer.write_bit(self.CCTandStepCodeColourValidity).unwrap();
-        writer.write_bit(self.CBandStepCodeBrightnessValidity).unwrap();
+        writer
+            .write_bit(self.CBandStepCodeBrightnessValidity)
+            .unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
     }
@@ -13352,10 +13632,17 @@ impl crate::specific::SpecificDataPoint for DPT_250_x {
 impl Display for DPT_250_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}", self.reserved, self.CCT, self
-            .StepCodeColourTemperature, self.reserved2, self.CB, self.StepCodeBrightness,
-            self.reserved3, self.CCTandStepCodeColourValidity, self
-            .CBandStepCodeBrightnessValidity
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.reserved,
+            self.CCT,
+            self.StepCodeColourTemperature,
+            self.reserved2,
+            self.CB,
+            self.StepCodeBrightness,
+            self.reserved3,
+            self.CCTandStepCodeColourValidity,
+            self.CBandStepCodeBrightnessValidity
         )
     }
 }
@@ -13421,9 +13708,18 @@ impl crate::specific::SpecificDataPoint for DPT_251_600 {
 impl Display for DPT_251_600 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}", self.ColourLevelRed, self
-            .ColourLevelGreen, self.ColourLevelBlue, self.ColourLevelWhite, self
-            .reserved, self.reserved2, self.mR, self.mG, self.mB, self.mW
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.ColourLevelRed,
+            self.ColourLevelGreen,
+            self.ColourLevelBlue,
+            self.ColourLevelWhite,
+            self.reserved,
+            self.reserved2,
+            self.mR,
+            self.mG,
+            self.mB,
+            self.mW
         )
     }
 }
@@ -13489,9 +13785,18 @@ impl crate::specific::SpecificDataPoint for DPT_251_x {
 impl Display for DPT_251_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}", self.ColourLevelRed, self
-            .ColourLevelGreen, self.ColourLevelBlue, self.ColourLevelWhite, self
-            .reserved, self.reserved2, self.mR, self.mG, self.mB, self.mW
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.ColourLevelRed,
+            self.ColourLevelGreen,
+            self.ColourLevelBlue,
+            self.ColourLevelWhite,
+            self.reserved,
+            self.reserved2,
+            self.mR,
+            self.mG,
+            self.mB,
+            self.mW
         )
     }
 }
@@ -13587,11 +13892,25 @@ impl crate::specific::SpecificDataPoint for DPT_252_600 {
 impl Display for DPT_252_600 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}", self.reserved, self
-            .MaskCw, self.MaskCb, self.MaskCg, self.MaskCr, self.reserved2, self.Cw, self
-            .StepCodeColourWhite, self.reserved3, self.Cb, self.StepCodeColourBlue, self
-            .reserved4, self.Cg, self.StepCodeColourGreen, self.reserved5, self.Cr, self
-            .StepCodeColourRed
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.reserved,
+            self.MaskCw,
+            self.MaskCb,
+            self.MaskCg,
+            self.MaskCr,
+            self.reserved2,
+            self.Cw,
+            self.StepCodeColourWhite,
+            self.reserved3,
+            self.Cb,
+            self.StepCodeColourBlue,
+            self.reserved4,
+            self.Cg,
+            self.StepCodeColourGreen,
+            self.reserved5,
+            self.Cr,
+            self.StepCodeColourRed
         )
     }
 }
@@ -13687,11 +14006,25 @@ impl crate::specific::SpecificDataPoint for DPT_252_x {
 impl Display for DPT_252_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}", self.reserved, self
-            .MaskCw, self.MaskCb, self.MaskCg, self.MaskCr, self.reserved2, self.Cw, self
-            .StepCodeColourWhite, self.reserved3, self.Cb, self.StepCodeColourBlue, self
-            .reserved4, self.Cg, self.StepCodeColourGreen, self.reserved5, self.Cr, self
-            .StepCodeColourRed
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.reserved,
+            self.MaskCw,
+            self.MaskCb,
+            self.MaskCg,
+            self.MaskCr,
+            self.reserved2,
+            self.Cw,
+            self.StepCodeColourWhite,
+            self.reserved3,
+            self.Cb,
+            self.StepCodeColourBlue,
+            self.reserved4,
+            self.Cg,
+            self.StepCodeColourGreen,
+            self.reserved5,
+            self.Cr,
+            self.StepCodeColourRed
         )
     }
 }
@@ -13757,9 +14090,17 @@ impl crate::specific::SpecificDataPoint for DPT_254_600 {
 impl Display for DPT_254_600 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}", self.reserved, self.Cb, self
-            .StepCodeColourBlue, self.reserved2, self.Cg, self.StepCodeColourGreen, self
-            .reserved3, self.Cr, self.StepCodeColourRed
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.reserved,
+            self.Cb,
+            self.StepCodeColourBlue,
+            self.reserved2,
+            self.Cg,
+            self.StepCodeColourGreen,
+            self.reserved3,
+            self.Cr,
+            self.StepCodeColourRed
         )
     }
 }
@@ -13825,9 +14166,17 @@ impl crate::specific::SpecificDataPoint for DPT_254_x {
 impl Display for DPT_254_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}", self.reserved, self.Cb, self
-            .StepCodeColourBlue, self.reserved2, self.Cg, self.StepCodeColourGreen, self
-            .reserved3, self.Cr, self.StepCodeColourRed
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.reserved,
+            self.Cb,
+            self.StepCodeColourBlue,
+            self.reserved2,
+            self.Cg,
+            self.StepCodeColourGreen,
+            self.reserved3,
+            self.Cr,
+            self.StepCodeColourRed
         )
     }
 }
@@ -13843,8 +14192,12 @@ impl crate::specific::SpecificDataPoint for DPT_255_1 {
     fn to_data_point(&self) -> DataPoint {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
-        writer.write(32u8 as u32, f32::to_bits(self.Longitude)).unwrap();
-        writer.write(32u8 as u32, f32::to_bits(self.Latitude)).unwrap();
+        writer
+            .write(32u8 as u32, f32::to_bits(self.Longitude))
+            .unwrap();
+        writer
+            .write(32u8 as u32, f32::to_bits(self.Latitude))
+            .unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
     }
@@ -13885,8 +14238,12 @@ impl crate::specific::SpecificDataPoint for DPT_255_x {
     fn to_data_point(&self) -> DataPoint {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
-        writer.write(32u8 as u32, f32::to_bits(self.Longitude)).unwrap();
-        writer.write(32u8 as u32, f32::to_bits(self.Latitude)).unwrap();
+        writer
+            .write(32u8 as u32, f32::to_bits(self.Longitude))
+            .unwrap();
+        writer
+            .write(32u8 as u32, f32::to_bits(self.Latitude))
+            .unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
     }
@@ -13930,13 +14287,22 @@ impl crate::specific::SpecificDataPoint for DPT_275_100 {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
         writer
-            .write(16u8 as u32, encode_knxf16(self.roomtemperaturesetpointcomfort))
+            .write(
+                16u8 as u32,
+                encode_knxf16(self.roomtemperaturesetpointcomfort),
+            )
             .unwrap();
         writer
-            .write(16u8 as u32, encode_knxf16(self.roomtemperaturesetpointstandby))
+            .write(
+                16u8 as u32,
+                encode_knxf16(self.roomtemperaturesetpointstandby),
+            )
             .unwrap();
         writer
-            .write(16u8 as u32, encode_knxf16(self.roomtemperaturesetpointeconomy))
+            .write(
+                16u8 as u32,
+                encode_knxf16(self.roomtemperaturesetpointeconomy),
+            )
             .unwrap();
         writer
             .write(
@@ -13980,9 +14346,12 @@ impl crate::specific::SpecificDataPoint for DPT_275_100 {
 impl Display for DPT_275_100 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{:.1}/{:.1}/{:.1}/{:.1}", self.roomtemperaturesetpointcomfort, self
-            .roomtemperaturesetpointstandby, self.roomtemperaturesetpointeconomy, self
-            .roomtemperaturesetpointbuildingprotection
+            f,
+            "{:.1}/{:.1}/{:.1}/{:.1}",
+            self.roomtemperaturesetpointcomfort,
+            self.roomtemperaturesetpointstandby,
+            self.roomtemperaturesetpointeconomy,
+            self.roomtemperaturesetpointbuildingprotection
         )
     }
 }
@@ -14001,13 +14370,22 @@ impl crate::specific::SpecificDataPoint for DPT_275_101 {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
         writer
-            .write(16u8 as u32, encode_knxf16(self.roomtemperaturesetpointshiftcomfort))
+            .write(
+                16u8 as u32,
+                encode_knxf16(self.roomtemperaturesetpointshiftcomfort),
+            )
             .unwrap();
         writer
-            .write(16u8 as u32, encode_knxf16(self.roomtemperaturesetpointshiftstandby))
+            .write(
+                16u8 as u32,
+                encode_knxf16(self.roomtemperaturesetpointshiftstandby),
+            )
             .unwrap();
         writer
-            .write(16u8 as u32, encode_knxf16(self.roomtemperaturesetpointshifteconomy))
+            .write(
+                16u8 as u32,
+                encode_knxf16(self.roomtemperaturesetpointshifteconomy),
+            )
             .unwrap();
         writer
             .write(
@@ -14051,10 +14429,12 @@ impl crate::specific::SpecificDataPoint for DPT_275_101 {
 impl Display for DPT_275_101 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{:.1}/{:.1}/{:.1}/{:.1}", self.roomtemperaturesetpointshiftcomfort, self
-            .roomtemperaturesetpointshiftstandby, self
-            .roomtemperaturesetpointshifteconomy, self
-            .roomtemperaturesetpointshiftbuildingprotection
+            f,
+            "{:.1}/{:.1}/{:.1}/{:.1}",
+            self.roomtemperaturesetpointshiftcomfort,
+            self.roomtemperaturesetpointshiftstandby,
+            self.roomtemperaturesetpointshifteconomy,
+            self.roomtemperaturesetpointshiftbuildingprotection
         )
     }
 }
@@ -14073,13 +14453,22 @@ impl crate::specific::SpecificDataPoint for DPT_275_x {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
         writer
-            .write(16u8 as u32, encode_knxf16(self.roomtemperaturesetpointcomfort))
+            .write(
+                16u8 as u32,
+                encode_knxf16(self.roomtemperaturesetpointcomfort),
+            )
             .unwrap();
         writer
-            .write(16u8 as u32, encode_knxf16(self.roomtemperaturesetpointstandby))
+            .write(
+                16u8 as u32,
+                encode_knxf16(self.roomtemperaturesetpointstandby),
+            )
             .unwrap();
         writer
-            .write(16u8 as u32, encode_knxf16(self.roomtemperaturesetpointeconomy))
+            .write(
+                16u8 as u32,
+                encode_knxf16(self.roomtemperaturesetpointeconomy),
+            )
             .unwrap();
         writer
             .write(
@@ -14123,9 +14512,12 @@ impl crate::specific::SpecificDataPoint for DPT_275_x {
 impl Display for DPT_275_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{:.1}/{:.1}/{:.1}/{:.1}", self.roomtemperaturesetpointcomfort, self
-            .roomtemperaturesetpointstandby, self.roomtemperaturesetpointeconomy, self
-            .roomtemperaturesetpointbuildingprotection
+            f,
+            "{:.1}/{:.1}/{:.1}/{:.1}",
+            self.roomtemperaturesetpointcomfort,
+            self.roomtemperaturesetpointstandby,
+            self.roomtemperaturesetpointeconomy,
+            self.roomtemperaturesetpointbuildingprotection
         )
     }
 }
@@ -14203,10 +14595,24 @@ impl crate::specific::SpecificDataPoint for DPT_285_1 {
 impl Display for DPT_285_1 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}", self.int, self.int2,
-            self.int3, self.int4, self.int5, self.int6, self.int7, self.int8, self.int9,
-            self.int10, self.int11, self.int12, self.int13, self.int14, self.int15, self
-            .int16
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.int,
+            self.int2,
+            self.int3,
+            self.int4,
+            self.int5,
+            self.int6,
+            self.int7,
+            self.int8,
+            self.int9,
+            self.int10,
+            self.int11,
+            self.int12,
+            self.int13,
+            self.int14,
+            self.int15,
+            self.int16
         )
     }
 }
@@ -14284,10 +14690,24 @@ impl crate::specific::SpecificDataPoint for DPT_285_x {
 impl Display for DPT_285_x {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
-            f, "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}", self.int, self.int2,
-            self.int3, self.int4, self.int5, self.int6, self.int7, self.int8, self.int9,
-            self.int10, self.int11, self.int12, self.int13, self.int14, self.int15, self
-            .int16
+            f,
+            "{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}",
+            self.int,
+            self.int2,
+            self.int3,
+            self.int4,
+            self.int5,
+            self.int6,
+            self.int7,
+            self.int8,
+            self.int9,
+            self.int10,
+            self.int11,
+            self.int12,
+            self.int13,
+            self.int14,
+            self.int15,
+            self.int16
         )
     }
 }

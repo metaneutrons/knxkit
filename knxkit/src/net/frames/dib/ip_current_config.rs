@@ -13,16 +13,23 @@ use super::DescriptionType;
 use crate::core::util::prelude::*;
 
 // 3/8/2-7.5.4.5
+/// Current IP configuration DIB (3/8/2-7.5.4.5).
 #[derive(Debug, Clone)]
 pub struct IpCurrentConfig {
+    /// Current IP address.
     pub address: Ipv4Addr,
+    /// Current subnet mask.
     pub netmask: u32,
+    /// Current default gateway.
     pub gateway: Ipv4Addr,
+    /// DHCP server address.
     pub dhcp_server: Ipv4Addr,
+    /// Current IP assignment method.
     pub assignment_method: u8,
 }
 
 impl IpCurrentConfig {
+    /// Parses a current IP configuration DIB from wire format.
     pub fn parse(input: Input) -> Result<Self> {
         let (input, _length) = parse_u8(input)?;
         let (input, _) = parse_token(DescriptionType::IpCurConfig.to_u8().unwrap())(input)?;

@@ -9,13 +9,17 @@
 
 use std::str::FromStr;
 
+/// KNX Datapoint Type identifier (e.g., 9.001 for temperature).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct DPT {
+    /// Main type number.
     pub main: u16,
+    /// Sub type number, or `None` for the generic main type.
     pub sub: Option<u16>,
 }
 
 impl DPT {
+    /// Creates a new DPT with the given main and optional sub number.
     pub const fn new(main: u16, sub: Option<u16>) -> Self {
         Self { main, sub }
     }

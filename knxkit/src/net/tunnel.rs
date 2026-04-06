@@ -50,6 +50,7 @@ macro_rules! break_on_err {
     };
 }
 
+/// Break out of a loop if the expression evaluates to `None`.
 #[macro_export]
 macro_rules! break_on_none {
     ($x:expr) => {
@@ -61,6 +62,7 @@ macro_rules! break_on_none {
     };
 }
 
+/// Try to parse a frame, breaking out of the loop on failure.
 #[macro_export]
 macro_rules! try_parse {
     ($m:ident, $x:expr) => {
@@ -78,6 +80,7 @@ enum State {
     Wait,
 }
 
+/// Connection-state heartbeat state machine for KNX/IP tunneling.
 pub struct Heartbeat {
     deadline: Instant,
     state: State,
@@ -91,6 +94,7 @@ impl Heartbeat {
     const SHORT: Duration = Duration::from_secs(10);
     const LONG: Duration = Duration::from_secs(60);
 
+    /// Create a new heartbeat for the given tunnel channel.
     pub fn new(channel: u8, control: HPAI) -> Self {
         let request = ConnectionStateRequest { channel, control };
 
@@ -103,6 +107,7 @@ impl Heartbeat {
         }
     }
 
+    /// Wait for the next heartbeat interval, returning a request to send or `None` on failure.
     pub async fn recv(&mut self) -> Option<ConnectionStateRequest> {
         match self.state {
             State::Sleep => {
@@ -129,6 +134,7 @@ impl Heartbeat {
         }
     }
 
+    /// Process a connection-state response; returns `false` if the connection should be closed.
     pub fn response(&mut self, response: ConnectionStateResponse) -> bool {
         if response.channel == self.channel {
             trace!(self.channel, "connection state response");
@@ -195,6 +201,7 @@ struct Current {
     ack: Arc<Notify>,
 }
 
+/// Outbound tunneling request queue with retry logic.
 pub struct Sender {
     channel: u8,
     sequence: u8,
@@ -205,6 +212,7 @@ pub struct Sender {
 impl Sender {
     const DELAY: Duration = Duration::from_secs(3);
 
+    /// Create a new sender for the given tunnel channel.
     pub fn new(channel: u8) -> Self {
         Self {
             channel,
@@ -214,6 +222,7 @@ impl Sender {
         }
     }
 
+    /// Wait for the next tunneling request to send, or `None` on retry exhaustion.
     pub async fn recv(&mut self) -> Option<TunnelingRequest> {
         if let Some(active) = &mut self.active {
             sleep_until(active.deadline).await;
@@ -385,6 +394,7 @@ fn spawn_tunnel(channel: u8, endpoint: UdpEndpoint) -> TunnelConnection {
     }
 }
 
+/// A stateful KNX/IP tunneling connection.
 pub struct TunnelConnection {
     channel: u8,
     term: Arc<Notify>,
@@ -394,10 +404,12 @@ pub struct TunnelConnection {
 }
 
 impl TunnelConnection {
+    /// Open a tunnel connection to a KNX/IP device using default settings.
     pub async fn start(local: Ipv4Addr, peer: SocketAddrV4) -> Result<TunnelConnection, Error> {
         Self::start_ext(local, peer, TunnelLayer::Link, true).await
     }
 
+    /// Open a tunnel connection with explicit layer and NAT settings.
     pub async fn start_ext(
         local: Ipv4Addr,
         peer: SocketAddrV4,
@@ -449,6 +461,7 @@ impl TunnelConnection {
         }
     }
 
+    /// Gracefully disconnect the tunnel, sending a disconnect request to the peer.
     pub async fn terminate(mut self) -> () {
         let join = self.handle.take().unwrap();
 

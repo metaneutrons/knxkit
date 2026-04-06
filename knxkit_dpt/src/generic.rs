@@ -19,7 +19,7 @@ pub use super::generated::generic::*;
 
 type Lazy<T> = LazyCell<T, Box<dyn FnOnce() -> T>>;
 
-/// Untyped datapioint representation
+/// Type-erased datapoint representation with lazy encoding.
 pub struct GenericDataPoint {
     dpt: DPT,
     raw: Lazy<DataPoint>,
@@ -28,6 +28,7 @@ pub struct GenericDataPoint {
 }
 
 impl GenericDataPoint {
+    /// Wraps a specific datapoint value into a type-erased generic representation.
     pub fn new<T>(value: T) -> Self
     where
         T: SpecificDataPoint + std::fmt::Display + 'static,

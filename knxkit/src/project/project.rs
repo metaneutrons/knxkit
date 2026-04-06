@@ -17,14 +17,19 @@ use crate::project::{devices::Devices, error::Error, groups::Groups, master};
 
 use super::MasterData;
 
+/// A parsed ETS project file containing devices, groups, and master data.
 #[derive(Clone, Debug)]
 pub struct Project {
+    /// All devices defined in the project.
     pub devices: Devices,
+    /// All group addresses defined in the project.
     pub groups: Groups,
+    /// KNX master data with datapoint type definitions.
     pub master: MasterData,
 }
 
 impl Project {
+    /// Opens and parses an ETS project archive (`.knxproj` zip file).
     pub fn open(file_name: impl AsRef<Path>) -> Result<Project, Error> {
         let file = std::fs::File::open(file_name)?;
         let mut zip = zip::ZipArchive::new(file)?;

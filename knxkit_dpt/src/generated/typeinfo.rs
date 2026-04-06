@@ -1,6 +1,6 @@
 // This file is generated, don't manually edit it!
-use knxkit::project::DPT;
 use crate::typeinfo::TypeInfo;
+use knxkit::project::DPT;
 pub fn lookup(dpt: DPT) -> Option<&'static TypeInfo> {
     static DATAPOINTS: &'static [(DPT, TypeInfo)] = &[
         (
@@ -3428,9 +3428,7 @@ pub fn lookup(dpt: DPT) -> Option<&'static TypeInfo> {
             TypeInfo {
                 dpt: DPT::new(255u16, Some(1u16)),
                 name: "DPT_GeographicalLocation",
-                text: Some(
-                    "geographical location (longitude and latitude) expressed in degrees",
-                ),
+                text: Some("geographical location (longitude and latitude) expressed in degrees"),
                 unit: None,
             },
         ),
@@ -3480,5 +3478,8 @@ pub fn lookup(dpt: DPT) -> Option<&'static TypeInfo> {
             },
         ),
     ];
-    DATAPOINTS.binary_search_by_key(&dpt, |x| x.0).ok().map(|ix| &DATAPOINTS[ix].1)
+    DATAPOINTS
+        .binary_search_by_key(&dpt, |x| x.0)
+        .ok()
+        .map(|ix| &DATAPOINTS[ix].1)
 }

@@ -9,17 +9,22 @@
 
 use knxkit::{core::DataPoint, project::DPT};
 
+/// Errors that can occur when encoding or decoding datapoints.
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    /// The binary payload does not match the expected DPT encoding.
     #[error("Invalid data point value: {0}")]
     InvalidDataPointValue(DataPoint),
 
+    /// The requested DPT is not supported or unknown.
     #[error("Invalid DPT: {0}")]
     InvalidDPT(DPT),
 
+    /// An I/O error occurred during encoding or decoding.
     #[error("IO Error: {0}")]
     IOError(#[from] std::io::Error),
 
+    /// A JSON serialization/deserialization error occurred.
     #[error("Serde Error: {0}")]
     SerdeError(#[from] serde_json::Error),
 }

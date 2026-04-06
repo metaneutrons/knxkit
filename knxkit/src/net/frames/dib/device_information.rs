@@ -16,25 +16,33 @@ use super::DescriptionType;
 use crate::{core::address::IndividualAddress, core::util::prelude::*};
 
 // 3/8/2-7.5.4.2
+/// KNX communication medium type (3/8/2-7.5.4.2).
 #[derive(PartialEq, Debug, Clone, ToPrimitive, FromPrimitive, Display)]
 pub enum Medium {
+    /// Twisted pair (TP1).
     TP1 = 0x02,
+    /// Powerline (PL110).
     PL110 = 0x04,
+    /// Radio frequency.
     RF = 0x10,
+    /// IP.
     IP = 0x20,
 }
 
 // 3/8/2-7.5.4.2
+/// Device status flags (3/8/2-7.5.4.2).
 #[derive(Debug, Clone, PartialEq)]
 pub struct Status(pub u8);
 
 impl Status {
+    /// Returns true if the device is in programming mode.
     pub fn is_programming(&self) -> bool {
         self.0 & 0x01 != 0
     }
 }
 
 // 3/8/2-7.5.4.2
+/// Project installation identifier (3/8/2-7.5.4.2).
 #[derive(Clone, PartialEq)]
 pub struct Project(u16);
 
@@ -48,19 +56,29 @@ impl std::fmt::Debug for Project {
 }
 
 // 3/8/2-7.5.4.2
+/// Device information DIB (3/8/2-7.5.4.2).
 #[derive(Debug, Clone)]
 pub struct DeviceInformation {
+    /// KNX communication medium.
     pub medium: Medium,
+    /// Individual address of the device.
     pub address: IndividualAddress,
+    /// Project installation identifier.
     pub project: Project,
+    /// KNX serial number.
     pub serial: [u8; 6],
+    /// Multicast address for routing.
     pub ip_multicast: Ipv4Addr,
+    /// MAC address of the device.
     pub mac: MacAddr6,
+    /// Device friendly name.
     pub name: String,
+    /// Device status flags.
     pub status: Status,
 }
 
 impl DeviceInformation {
+    /// Parses a device information DIB from wire format.
     pub fn parse(input0: Input) -> Result<Self> {
         let (input, _) = parse_u8(input0)?;
         let (input, _) = parse_token(DescriptionType::DeviceInfo.to_u8().unwrap())(input)?;

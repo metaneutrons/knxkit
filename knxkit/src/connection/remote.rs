@@ -15,14 +15,20 @@ use std::{
     os::unix::fs::FileTypeExt,
 };
 
+/// Describes a remote KNX connection target.
 #[derive(Debug, Clone)]
 pub enum RemoteSpec {
+    /// KNX/IP tunneling endpoint (point-to-point, stateful).
     KnxIpTunnel(SocketAddrV4),
+    /// KNX/IP multicast routing endpoint (stateless).
     KnxIpMulticast(SocketAddrV4),
+    /// KNX USB device path.
     KnxUSB(OsString),
+    /// Unix domain socket for knxkit IPC.
     KnxkitSocketUnix(OsString),
 }
 
+/// Parse a URL string into a [`RemoteSpec`] connection target.
 pub fn parse_remote(url: &str) -> Result<RemoteSpec, crate::Error> {
     let source_url = url::Url::parse(url).map_err(|e| Error::new(ErrorKind::InvalidInput, e))?;
 
@@ -84,6 +90,7 @@ pub fn parse_remote(url: &str) -> Result<RemoteSpec, crate::Error> {
     Ok(source)
 }
 
+/// Establish a KNX bus connection to the given remote target.
 pub async fn connect(
     local: Ipv4Addr,
     remote: &RemoteSpec,

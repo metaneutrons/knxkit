@@ -19,91 +19,143 @@ use crate::project::{
     util::{by_name, NodeExt},
 };
 
+/// A KNX datapoint main type definition from the master data.
 #[derive(Debug, Clone)]
 #[allow(dead_code)]
 pub struct DatapointType {
+    /// Unique identifier from the KNX master XML.
     pub id: SharedString,
+    /// Main DPT number (sub is always `None`).
     pub dpt: DPT,
 
+    /// Human-readable name (e.g., `DPT_Switch`).
     pub name: SharedString,
+    /// Optional descriptive text.
     pub text: Option<SharedString>,
 
+    /// Size of the datapoint in bits.
     pub size: u16,
 
+    /// Sub types belonging to this main type.
     pub subtypes: Vec<Arc<DatapointSubtype>>,
 }
 
+/// A KNX datapoint sub type definition describing a specific encoding.
 #[derive(Debug, Clone)]
 #[allow(dead_code)]
 pub struct DatapointSubtype {
+    /// Unique identifier from the KNX master XML.
     pub id: SharedString,
+    /// Full DPT number (main + sub).
     pub dpt: DPT,
+    /// Size of the datapoint in bits.
     pub size: u16,
 
+    /// Human-readable name (e.g., `DPT_Switch`).
     pub name: SharedString,
+    /// Optional descriptive text.
     pub text: Option<SharedString>,
 
+    /// Ordered list of format fields that make up the encoding.
     pub formats: Vec<Format>,
+    /// Optional default value as a string.
     pub default: Option<SharedString>,
 }
 
+/// A single value in an enumeration format field.
 #[derive(Debug, Clone)]
 #[allow(dead_code)]
 pub struct EnumerationValue {
+    /// Unique identifier from the KNX master XML.
     pub id: SharedString,
+    /// Numeric value of this enum entry.
     pub value: u8,
+    /// Human-readable label.
     pub text: SharedString,
 }
 
+/// Describes the encoding layout of a single field within a datapoint.
 #[derive(Debug, Clone)]
 #[allow(dead_code)]
 pub enum Format {
+    /// Single-bit boolean field.
     Bit {
+        /// Optional field name.
         name: Option<SharedString>,
+        /// Label when the bit is 0.
         cleared: SharedString,
+        /// Label when the bit is 1.
         set: SharedString,
     },
 
+    /// Signed or unsigned integer field.
     Integer {
+        /// Optional field name.
         name: Option<SharedString>,
+        /// Bit width of the integer.
         width: u8,
+        /// Whether the integer is signed.
         signed: bool,
+        /// Minimum allowed value (inclusive).
         min_inclusive: Option<i64>,
+        /// Maximum allowed value (inclusive).
         max_inclusive: Option<i64>,
+        /// Scaling coefficient applied to the raw value.
         coefficient: Option<f64>,
+        /// Physical unit string (e.g., `°C`).
         unit: Option<SharedString>,
     },
 
+    /// Floating-point field.
     Float {
+        /// Optional field name.
         name: Option<SharedString>,
+        /// Bit width of the float.
         width: u8,
+        /// Minimum representable value.
         min_value: Option<f64>,
+        /// Maximum representable value.
         max_value: Option<f64>,
+        /// Physical unit string.
         unit: Option<SharedString>,
     },
 
+    /// Character string field.
     String {
+        /// Optional field name.
         name: Option<SharedString>,
+        /// Character encoding (e.g., `us-ascii`).
         encoding: SharedString,
+        /// Width in characters.
         width: u16,
+        /// Whether the string has variable length.
         variable_length: bool,
+        /// Whether the string is null-terminated.
         null_terminated: bool,
     },
 
+    /// Enumeration field mapping integer values to labels.
     Enumeration {
+        /// Optional field name.
         name: Option<SharedString>,
+        /// Bit width of the enumeration.
         width: u8,
+        /// Possible enumeration values.
         values: Vec<EnumerationValue>,
     },
 
+    /// Reserved (padding) bits.
     Reserved {
+        /// Bit width of the reserved field.
         width: u8,
     },
 
+    /// Reference to another format definition by id.
     Reference(SharedString),
 }
 
 impl Format {
+    /// Returns the physical unit string, if this format carries one.
     pub fn unit(&self) -> Option<SharedString> {
         match self {
             Format::Integer { unit, .. } => unit.clone(),
@@ -215,18 +267,25 @@ fn parse_format(f: Node, symbols: &StringPool) -> Result<(Option<SharedString>, 
         )),
     }
 }
+/// Parsed KNX master data containing all datapoint type definitions.
 #[derive(Debug, Clone)]
 #[allow(dead_code)]
 pub struct MasterData {
+    /// Master data schema version.
     pub version: String,
+    /// All main datapoint types.
     pub types: Vec<DatapointType>,
+    /// All datapoint subtypes (including generic main-type entries).
     pub subtypes: Vec<Arc<DatapointSubtype>>,
+    /// Index from subtype id to position in `subtypes`.
     pub by_id: HashMap<SharedString, usize>,
+    /// Index from DPT number to position in `subtypes`.
     pub by_dpt: HashMap<DPT, usize>,
     symbols: Arc<StringPool>,
 }
 
 impl MasterData {
+    /// Parses master data from a KNX master XML document.
     pub fn parse(document: &Document, symbols: Arc<StringPool>) -> Result<MasterData, Error> {
         let masterdata = document.root().child("KNX")?.child("MasterData")?;
         let version = masterdata.att::<String>("Version")?;
@@ -336,11 +395,13 @@ impl MasterData {
         })
     }
 
+    /// Looks up a datapoint subtype by its XML identifier string.
     pub fn by_id(&self, id: &str) -> Option<&Arc<DatapointSubtype>> {
         let id = self.symbols.get(id);
         self.by_id.get(&id).map(|ix| &self.subtypes[*ix])
     }
 
+    /// Looks up a datapoint subtype by its DPT number.
     pub fn by_dpt(&self, dpt: DPT) -> Option<&Arc<DatapointSubtype>> {
         self.by_dpt.get(&dpt).map(|ix| &self.subtypes[*ix])
     }

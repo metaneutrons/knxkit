@@ -13,22 +13,33 @@ use crate::core::{
     util::prelude::*,
 };
 
+/// Transport Protocol Data Unit carrying an APDU or control command.
 #[derive(Debug, Clone)]
 pub enum TPDU {
+    /// Broadcast data telegram.
     DataBroadcast(APDU),
+    /// Group-addressed data telegram.
     DataGroup(APDU),
+    /// Individual-addressed connectionless data telegram.
     DataIndividual(APDU),
+    /// Tag-group data telegram.
     DataTagGroup(APDU),
+    /// Connection-oriented data telegram with sequence number.
     DataConnected(u8, APDU),
 
     // control
+    /// Transport-layer connect request.
     Connect,
+    /// Transport-layer disconnect request.
     Disconnect,
+    /// Positive acknowledgement with sequence number.
     Ack(u8),
+    /// Negative acknowledgement with sequence number.
     Nack(u8),
 }
 
 impl TPDU {
+    /// Parses a TPDU from binary input given the destination address and NPDU length.
     pub fn parse(input: Input, destination: DestinationAddress, npdu_length: u8) -> Result<Self> {
         let (input, tpci) = parse_u8(input)?;
 
@@ -60,7 +71,8 @@ impl TPDU {
         Ok((input, tpdu))
     }
 
-    pub fn gen<W: Write>(&self) -> impl SerializeFn<W> + use<'_, W> { 
+    /// Serializes this TPDU to binary.
+    pub fn gen<W: Write>(&self) -> impl SerializeFn<W> + use<'_, W> {
         #[rustfmt::skip]
         let (prefix, seq, suffix, apdu) = match self {
             TPDU::DataBroadcast(apdu)      => (0b00, 0b0000,  apdu.suffix(), Some(apdu.gen())),

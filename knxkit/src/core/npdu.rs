@@ -9,13 +9,16 @@
 
 use crate::core::{address::DestinationAddress, tpdu::TPDU, util::prelude::*};
 
+/// Network Protocol Data Unit wrapping a TPDU.
 #[derive(Debug, Clone)]
 pub struct NPDU {
     // pub length: u8,
+    /// The transport protocol data unit payload.
     pub tpdu: TPDU,
 }
 
 impl NPDU {
+    /// Parses an NPDU from binary input given the destination address.
     pub fn parse(input: Input, destination: DestinationAddress) -> Result<Self> {
         // 03_03_03-2.1 (octet 5)
         let (input, length) = parse_u8(input)?;
@@ -29,6 +32,7 @@ impl NPDU {
         Ok((input, NPDU { tpdu }))
     }
 
+    /// Serializes this NPDU to binary.
     pub fn gen<W: Write>(&self) -> impl SerializeFn<W> {
         let tpdu = gen_simple(self.tpdu.gen(), Vec::new()).expect("cannot generate TPDU");
 

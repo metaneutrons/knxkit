@@ -11,13 +11,17 @@ use super::DescriptionType;
 use crate::core::util::prelude::*;
 
 // 3/8/2-7.5.4.7
+/// Manufacturer data DIB (3/8/2-7.5.4.7).
 #[derive(Clone, Debug)]
 pub struct ManufacturerData {
+    /// KNX manufacturer ID.
     pub manufacturer_id: u16,
+    /// Manufacturer-specific data bytes.
     pub manufacturer_specific: Vec<u8>,
 }
 
 impl ManufacturerData {
+    /// Parses a manufacturer data DIB from wire format.
     pub fn parse(input: Input) -> Result<Self> {
         let (input, length) = parse_u8(input)?;
         let (input, _) = parse_token(DescriptionType::MFRData.to_u8().unwrap())(input)?;
