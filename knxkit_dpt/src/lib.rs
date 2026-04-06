@@ -56,11 +56,16 @@
 
 mod error;
 mod generated;
+/// Type-erased generic datapoint encoding and decoding.
 pub mod generic;
+/// Project extension trait for DPT-aware value lookups.
 pub mod project;
+/// Typed (specific) datapoint structures and the `SpecificDataPoint` trait.
 pub mod specific;
+/// Datapoint type metadata lookup.
 pub mod typeinfo;
 
+/// Errors returned by datapoint encoding and decoding operations.
 pub use error::Error;
 
 #[cfg(test)]

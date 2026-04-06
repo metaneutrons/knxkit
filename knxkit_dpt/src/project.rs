@@ -14,10 +14,15 @@ use knxkit::{
     project::{Project, ProjectExt},
 };
 
+/// Extension trait adding DPT-aware value decoding to project lookups.
 pub trait ProjectExtDPT: ProjectExt {
+    /// Returns the human-readable DPT name for the given group address.
     fn group_dpt_name(&self, address: impl Borrow<GroupAddress>) -> Option<&str>;
+    /// Returns the physical unit string for the given group address.
     fn group_dpt_unit(&self, address: impl Borrow<GroupAddress>) -> Option<&str>;
+    /// Decodes a datapoint to a display string, optionally appending the unit.
     fn group_value(&self, address: GroupAddress, dp: &DataPoint, unit: bool) -> Option<String>;
+    /// Decodes a datapoint to a JSON value for the given group address.
     fn group_json(&self, address: GroupAddress, dp: &DataPoint) -> Option<serde_json::Value>;
 }
 

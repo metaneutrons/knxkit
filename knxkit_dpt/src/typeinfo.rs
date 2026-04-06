@@ -11,6 +11,7 @@ pub use super::generated::typeinfo::*;
 
 use knxkit::project::DPT;
 
+/// Human-readable metadata for a KNX datapoint type.
 pub struct TypeInfo {
     /// DPT identifier
     pub dpt: DPT,

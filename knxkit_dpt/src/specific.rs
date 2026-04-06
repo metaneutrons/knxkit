@@ -19,8 +19,9 @@ use crate::Error;
 
 pub use super::generated::specific::*;
 
-/// Cvery generated datapoint structure implements this trait
+/// Every generated datapoint structure implements this trait.
 pub trait SpecificDataPoint: std::fmt::Display + Serialize {
+    /// The DPT identifier for this datapoint type.
     const DPT: DPT;
 
     /// Convert to DataPoint
@@ -37,6 +38,7 @@ pub trait SpecificDataPoint: std::fmt::Display + Serialize {
 pub struct Reserved;
 
 impl Reserved {
+    /// Creates a new reserved placeholder.
     pub fn new() -> Self {
         Reserved {}
     }
