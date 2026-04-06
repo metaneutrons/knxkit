@@ -23,7 +23,6 @@ pub trait ProjectExt {
     fn group(&self, address: impl Borrow<GroupAddress>) -> Option<SharedString>;
     /// Returns the DPT assigned to the given group address.
     fn group_dpt(&self, address: GroupAddress) -> Option<DPT>;
-    //    fn decode_hex(&self, address: GroupAddress, hex: &str) -> Result<DataPoint, Error>;
 }
 
 impl ProjectExt for Option<&Project> {
@@ -38,11 +37,4 @@ impl ProjectExt for Option<&Project> {
     fn group_dpt(&self, address: GroupAddress) -> Option<DPT> {
         self.and_then(|project| project.groups.by_address(address).and_then(|g| g.dpt))
     }
-
-    /*
-    fn decode_hex(&self, address: GroupAddress, hex: &str) -> Result<DataPoint, Error> {
-        // self.and_then(|project|)
-
-        unimplemented!();
-    }*/
 }

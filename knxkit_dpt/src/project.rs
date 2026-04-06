@@ -7,7 +7,7 @@
 //
 // SPDX-License-Identifier: EPL-2.0 OR GPL-3.0
 
-use std::borrow::Borrow;
+use std::{borrow::Borrow, str::FromStr};
 
 use knxkit::{
     core::{address::GroupAddress, DataPoint},
@@ -24,6 +24,12 @@ pub trait ProjectExtDPT: ProjectExt {
     fn group_value(&self, address: GroupAddress, dp: &DataPoint, unit: bool) -> Option<String>;
     /// Decodes a datapoint to a JSON value for the given group address.
     fn group_json(&self, address: GroupAddress, dp: &DataPoint) -> Option<serde_json::Value>;
+    /// Decodes a hex string into a typed value using the group's DPT.
+    fn decode_hex(
+        &self,
+        address: GroupAddress,
+        hex: &str,
+    ) -> Result<crate::generic::GenericDataPoint, crate::Error>;
 }
 
 impl ProjectExtDPT for Option<&Project> {
@@ -69,8 +75,21 @@ impl ProjectExtDPT for Option<&Project> {
                             .unwrap_or(String::default())
                     )
                 } else {
-                    format!("{}", data)
+                    format!("{data}")
                 }
             })
+    }
+
+    fn decode_hex(
+        &self,
+        address: GroupAddress,
+        hex: &str,
+    ) -> Result<crate::generic::GenericDataPoint, crate::Error> {
+        let dp = DataPoint::from_str(hex)
+            .map_err(|_| crate::Error::InvalidDPT(knxkit::project::DPT::new(0, None)))?;
+        let dpt = self
+            .group_dpt(address)
+            .ok_or_else(|| crate::Error::InvalidDPT(knxkit::project::DPT::new(0, None)))?;
+        crate::generic::try_decode(dpt, &dp)
     }
 }

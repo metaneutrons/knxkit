@@ -13,7 +13,7 @@ use std::{
 };
 
 use anyhow::{bail, Result};
-use clap::{command, Parser, Subcommand};
+use clap::{Parser, Subcommand};
 
 use knxkit::{connection::remote, project::Project};
 

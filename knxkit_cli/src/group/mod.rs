@@ -10,7 +10,7 @@
 use std::str::FromStr;
 
 use anyhow::Result;
-use clap::{command, Subcommand};
+use clap::Subcommand;
 
 use knxkit::core::address::GroupAddress;
 

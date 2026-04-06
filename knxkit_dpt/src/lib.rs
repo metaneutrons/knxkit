@@ -89,7 +89,6 @@ mod tests {
     #[test]
     fn test_encode_1_1() {
         assert_eq!(DPT_1_1(true).to_data_point(), DataPoint::Short(0x01));
-
         assert_eq!(DPT_1_1(false).to_data_point(), DataPoint::Short(0x00));
     }
 
@@ -112,5 +111,133 @@ mod tests {
 
         let _opaque2 =
             try_decode_json(DPT::new(1, Some(1)), serde_json::from_str(&json).unwrap()).unwrap();
+    }
+
+    // --- try_encode_json ---
+
+    #[test]
+    fn test_try_encode_json_bool() {
+        let dp = try_encode_json(DPT::new(1, Some(1)), serde_json::json!(true)).unwrap();
+        assert_eq!(dp, DataPoint::Short(0x01));
+
+        let dp = try_encode_json(DPT::new(1, Some(1)), serde_json::json!(false)).unwrap();
+        assert_eq!(dp, DataPoint::Short(0x00));
+    }
+
+    #[test]
+    fn test_try_encode_json_unsigned() {
+        let dp = try_encode_json(DPT::new(7, Some(1)), serde_json::json!(1000)).unwrap();
+        let decoded = DPT_7_1::from_data_point(&dp).unwrap();
+        assert_eq!(decoded.0, 1000);
+    }
+
+    #[test]
+    fn test_try_encode_json_float() {
+        let dp = try_encode_json(DPT::new(9, Some(1)), serde_json::json!(21.5)).unwrap();
+        let decoded = DPT_9_1::from_data_point(&dp).unwrap();
+        assert!((decoded.0 - 21.5).abs() < 0.1);
+    }
+
+    // --- try_from_json ---
+
+    #[test]
+    fn test_try_from_json_roundtrip() {
+        let generic = try_from_json(DPT::new(9, Some(1)), serde_json::json!(19.5)).unwrap();
+        assert_eq!(generic.dpt(), DPT::new(9, Some(1)));
+        let dp = generic.to_data_point();
+        let decoded = try_decode(DPT::new(9, Some(1)), &dp).unwrap();
+        assert!((decoded.to_json_value().as_f64().unwrap() - 19.5).abs() < 0.1);
+    }
+
+    // --- round-trip encode/decode across DPT families ---
+
+    #[test]
+    fn test_roundtrip_dpt_1_1_bool() {
+        let original = DPT_1_1(true);
+        let dp = original.to_data_point();
+        let decoded = DPT_1_1::from_data_point(&dp).unwrap();
+        assert_eq!(original, decoded);
+    }
+
+    #[test]
+    fn test_roundtrip_dpt_5_1_percent() {
+        let original = DPT_5_1(75);
+        let dp = original.to_data_point();
+        let decoded = DPT_5_1::from_data_point(&dp).unwrap();
+        assert_eq!(original, decoded);
+    }
+
+    #[test]
+    fn test_roundtrip_dpt_7_1_counter() {
+        let original = DPT_7_1(65535);
+        let dp = original.to_data_point();
+        let decoded = DPT_7_1::from_data_point(&dp).unwrap();
+        assert_eq!(original, decoded);
+    }
+
+    #[test]
+    fn test_roundtrip_dpt_9_1_temperature() {
+        let original = DPT_9_1(-10.5);
+        let dp = original.to_data_point();
+        let decoded = DPT_9_1::from_data_point(&dp).unwrap();
+        assert!((original.0 - decoded.0).abs() < 0.5);
+    }
+
+    #[test]
+    fn test_roundtrip_dpt_13_1_signed_counter() {
+        let original = DPT_13_1(-100_000);
+        let dp = original.to_data_point();
+        let decoded = DPT_13_1::from_data_point(&dp).unwrap();
+        assert_eq!(original, decoded);
+    }
+
+    #[test]
+    fn test_roundtrip_dpt_14_1_float() {
+        let original = DPT_14_1(3.14);
+        let dp = original.to_data_point();
+        let decoded = DPT_14_1::from_data_point(&dp).unwrap();
+        assert!((original.0 - decoded.0).abs() < 0.001);
+    }
+
+    // --- generic round-trip via JSON ---
+
+    #[test]
+    fn test_generic_json_roundtrip_multiple_dpts() {
+        let cases: Vec<(DPT, serde_json::Value)> = vec![
+            (DPT::new(1, Some(1)), serde_json::json!(true)),
+            (DPT::new(5, Some(1)), serde_json::json!(200)),
+            (DPT::new(7, Some(1)), serde_json::json!(50000)),
+            (DPT::new(9, Some(1)), serde_json::json!(22.0)),
+        ];
+
+        for (dpt, json_val) in cases {
+            let encoded = try_encode_json(dpt, json_val.clone()).unwrap();
+            let decoded = try_decode(dpt, &encoded).unwrap();
+            let json_back = decoded.to_json_value();
+
+            match (&json_val, &json_back) {
+                (serde_json::Value::Bool(a), serde_json::Value::Bool(b)) => assert_eq!(a, b),
+                (serde_json::Value::Number(a), serde_json::Value::Number(b)) => {
+                    let diff = (a.as_f64().unwrap() - b.as_f64().unwrap()).abs();
+                    assert!(diff < 1.0, "DPT {dpt}: {a} vs {b}, diff={diff}");
+                }
+                _ => panic!("type mismatch for DPT {dpt}"),
+            }
+        }
+    }
+
+    // --- error cases ---
+
+    #[test]
+    fn test_try_encode_json_invalid_dpt() {
+        let result = try_encode_json(DPT::new(999, Some(999)), serde_json::json!(42));
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_try_decode_wrong_payload() {
+        // DPT 9.1 expects Long(2 bytes), not Short
+        let result = try_decode(DPT::new(9, Some(1)), &DataPoint::Short(0x01));
+        assert!(result.is_err());
     }
 }

@@ -73,3 +73,17 @@ impl std::fmt::Display for GenericDataPoint {
         f.write_str(&self.display)
     }
 }
+
+/// Construct a [`GenericDataPoint`] from a JSON value and DPT identifier.
+///
+/// This is the inverse of [`GenericDataPoint::to_json_value`].
+pub fn try_from_json(dpt: DPT, value: Value) -> Result<GenericDataPoint, crate::Error> {
+    try_decode_json(dpt, value)
+}
+
+/// Encode a JSON value directly into a binary [`DataPoint`] for the given DPT.
+///
+/// Convenience wrapper: parses the JSON into a typed value, then serialises to wire format.
+pub fn try_encode_json(dpt: DPT, value: Value) -> Result<DataPoint, crate::Error> {
+    try_decode_json(dpt, value).map(|g| g.to_data_point())
+}

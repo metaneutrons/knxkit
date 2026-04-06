@@ -10,7 +10,7 @@
 use std::path::PathBuf;
 
 use anyhow::Result;
-use clap::{command, Parser};
+use clap::Parser;
 
 use knxkit::project::Project;
 

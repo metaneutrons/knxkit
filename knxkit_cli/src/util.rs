@@ -26,18 +26,13 @@ pub async fn connect(remote: &RemoteSpec) -> Result<impl KnxBusConnection> {
 }
 
 pub trait Defaults {
+    /// Format as display or "-" if None.
     fn unwrap_or_missing(self) -> impl Display;
-    fn unwrap_or_empty(self) -> impl Display;
 }
 
 impl<T: Display> Defaults for Option<T> {
     fn unwrap_or_missing(self) -> impl Display {
         self.map(|s| s.to_string()).unwrap_or("-".to_string())
-    }
-
-    fn unwrap_or_empty(self) -> impl Display {
-        self.map(|s| s.to_string())
-            .unwrap_or_else(|| String::default())
     }
 }
 
