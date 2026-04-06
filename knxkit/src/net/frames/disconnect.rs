@@ -52,3 +52,43 @@ impl FramePayload for DisconnectResponse {
         gen_tuple((gen_u8(self.channel), gen_u8(self.status)))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::net::frames::{Frame, FramePayload};
+    use std::net::SocketAddr;
+
+    #[test]
+    fn disconnect_request_round_trip() {
+        let addr: SocketAddr = "192.168.1.10:3671".parse().unwrap();
+        let original = DisconnectRequest {
+            channel: 0x15,
+            control: HPAI::new_udp(addr),
+        };
+
+        let frame = Frame::from(original);
+        let bytes: Vec<u8> = Vec::try_from(frame).unwrap();
+        let frame = Frame::try_from(bytes.as_slice()).unwrap();
+        let parsed = DisconnectRequest::try_parse(frame).unwrap();
+
+        assert_eq!(parsed.channel, 0x15);
+        assert_eq!(parsed.control, HPAI::new_udp(addr));
+    }
+
+    #[test]
+    fn disconnect_response_round_trip() {
+        let original = DisconnectResponse {
+            channel: 0x21,
+            status: 0x00,
+        };
+
+        let frame = Frame::from(original);
+        let bytes: Vec<u8> = Vec::try_from(frame).unwrap();
+        let frame = Frame::try_from(bytes.as_slice()).unwrap();
+        let parsed = DisconnectResponse::try_parse(frame).unwrap();
+
+        assert_eq!(parsed.channel, 0x21);
+        assert_eq!(parsed.status, 0x00);
+    }
+}

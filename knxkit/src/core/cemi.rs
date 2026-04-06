@@ -147,3 +147,70 @@ impl TryFrom<&[u8]> for CEMI {
         CEMI::parse(input).finish().map(|(_, value)| value)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::core::{
+        address::{GroupAddress, IndividualAddress},
+        apdu::{Service, APDU},
+        tpdu::TPDU,
+        DataPoint,
+    };
+
+    #[test]
+    fn cemi_group_write_round_trip() {
+        let original = CEMI {
+            mc: 0x11,
+            flags: CEMIFlags::FT | CEMIFlags::R,
+            hops: 6,
+            prio: Priority::Low,
+            source: IndividualAddress::new(0x1001),
+            destination: DestinationAddress::Group(GroupAddress::new(0x0801)),
+            npdu: NPDU {
+                tpdu: TPDU::DataGroup(APDU {
+                    service: Service::GroupValueWrite,
+                    data: Some(DataPoint::Short(0x01)),
+                }),
+            },
+        };
+
+        let bytes: Vec<u8> = Vec::try_from(original).unwrap();
+        let parsed = CEMI::try_from(bytes.as_slice()).unwrap();
+
+        assert_eq!(parsed.mc, 0x11);
+        assert!(parsed.flags.contains(CEMIFlags::FT));
+        assert!(parsed.flags.contains(CEMIFlags::R));
+        assert_eq!(parsed.hops, 6);
+        assert_eq!(parsed.prio, Priority::Low);
+        assert_eq!(parsed.source.as_u16(), 0x1001);
+        assert_eq!(parsed.destination.as_u16(), 0x0801);
+        assert!(parsed.destination.is_group());
+    }
+
+    #[test]
+    fn cemi_group_read_round_trip() {
+        let original = CEMI {
+            mc: 0x11,
+            flags: CEMIFlags::FT,
+            hops: 6,
+            prio: Priority::System,
+            source: IndividualAddress::new(0x0000),
+            destination: DestinationAddress::Group(GroupAddress::new(0x0901)),
+            npdu: NPDU {
+                tpdu: TPDU::DataGroup(APDU {
+                    service: Service::GroupValueRead,
+                    data: None,
+                }),
+            },
+        };
+
+        let bytes: Vec<u8> = Vec::try_from(original).unwrap();
+        let parsed = CEMI::try_from(bytes.as_slice()).unwrap();
+
+        assert_eq!(parsed.mc, 0x11);
+        assert_eq!(parsed.prio, Priority::System);
+        assert_eq!(parsed.source.as_u16(), 0x0000);
+        assert_eq!(parsed.destination.as_u16(), 0x0901);
+    }
+}

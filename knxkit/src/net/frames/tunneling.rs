@@ -102,3 +102,54 @@ impl FramePayload for TunnelingACK {
         gen_tuple((gen_u8(0x04), self.connection.gen(), gen_u8(self.status)))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::net::frames::{Frame, FramePayload};
+
+    #[test]
+    fn tunneling_request_round_trip() {
+        let original = TunnelingRequest {
+            connection: Connection {
+                channel: 0x01,
+                sequence: 0x04,
+            },
+            cemi: vec![
+                0x11, 0x00, 0xBC, 0xE0, 0x10, 0x01, 0x08, 0x01, 0x01, 0x00, 0x80,
+            ],
+        };
+
+        let frame = Frame::from(original);
+        let bytes: Vec<u8> = Vec::try_from(frame).unwrap();
+        let frame = Frame::try_from(bytes.as_slice()).unwrap();
+        let parsed = TunnelingRequest::try_parse(frame).unwrap();
+
+        assert_eq!(parsed.connection.channel, 0x01);
+        assert_eq!(parsed.connection.sequence, 0x04);
+        assert_eq!(
+            parsed.cemi,
+            vec![0x11, 0x00, 0xBC, 0xE0, 0x10, 0x01, 0x08, 0x01, 0x01, 0x00, 0x80]
+        );
+    }
+
+    #[test]
+    fn tunneling_ack_round_trip() {
+        let original = TunnelingACK {
+            connection: Connection {
+                channel: 0x01,
+                sequence: 0x04,
+            },
+            status: 0x00,
+        };
+
+        let frame = Frame::from(original);
+        let bytes: Vec<u8> = Vec::try_from(frame).unwrap();
+        let frame = Frame::try_from(bytes.as_slice()).unwrap();
+        let parsed = TunnelingACK::try_parse(frame).unwrap();
+
+        assert_eq!(parsed.connection.channel, 0x01);
+        assert_eq!(parsed.connection.sequence, 0x04);
+        assert_eq!(parsed.status, 0x00);
+    }
+}

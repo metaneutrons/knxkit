@@ -170,3 +170,61 @@ impl APDU {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn apdu_round_trip(original: &APDU) -> APDU {
+        let mut bytes = Vec::new();
+        cookie_factory::gen(original.gen(), &mut bytes).unwrap();
+        let prefix = original.suffix();
+        let npdu_length = bytes.len() as u8;
+        let (_, parsed) = APDU::parse(prefix, &bytes, npdu_length).unwrap();
+        parsed
+    }
+
+    #[test]
+    fn apdu_group_value_write_short_round_trip() {
+        let original = APDU {
+            service: Service::GroupValueWrite,
+            data: Some(DataPoint::Short(0x01)),
+        };
+        let parsed = apdu_round_trip(&original);
+        assert_eq!(parsed.service, Service::GroupValueWrite);
+        assert_eq!(parsed.data, Some(DataPoint::Short(0x01)));
+    }
+
+    #[test]
+    fn apdu_group_value_write_long_round_trip() {
+        let original = APDU {
+            service: Service::GroupValueWrite,
+            data: Some(DataPoint::Long(vec![0xAB, 0xCD])),
+        };
+        let parsed = apdu_round_trip(&original);
+        assert_eq!(parsed.service, Service::GroupValueWrite);
+        assert_eq!(parsed.data, Some(DataPoint::Long(vec![0xAB, 0xCD])));
+    }
+
+    #[test]
+    fn apdu_group_value_response_short_round_trip() {
+        let original = APDU {
+            service: Service::GroupValueResponse,
+            data: Some(DataPoint::Short(0x00)),
+        };
+        let parsed = apdu_round_trip(&original);
+        assert_eq!(parsed.service, Service::GroupValueResponse);
+        assert_eq!(parsed.data, Some(DataPoint::Short(0x00)));
+    }
+
+    #[test]
+    fn apdu_group_value_read_round_trip() {
+        let original = APDU {
+            service: Service::GroupValueRead,
+            data: None,
+        };
+        let parsed = apdu_round_trip(&original);
+        assert_eq!(parsed.service, Service::GroupValueRead);
+        assert_eq!(parsed.data, None);
+    }
+}

@@ -61,3 +61,59 @@ impl FramePayload for ConnectionStateResponse {
         gen_tuple((gen_u8(self.channel), gen_enum(8, &self.status)))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::net::frames::{Frame, FramePayload};
+    use std::net::SocketAddr;
+
+    #[test]
+    fn connection_state_request_round_trip() {
+        let addr: SocketAddr = "10.0.0.1:3671".parse().unwrap();
+        let original = ConnectionStateRequest {
+            channel: 0x0A,
+            control: HPAI::new_udp(addr),
+        };
+
+        let frame = Frame::from(original);
+        let bytes: Vec<u8> = Vec::try_from(frame).unwrap();
+        let frame = Frame::try_from(bytes.as_slice()).unwrap();
+        let parsed = ConnectionStateRequest::try_parse(frame).unwrap();
+
+        assert_eq!(parsed.channel, 0x0A);
+        assert_eq!(parsed.control, HPAI::new_udp(addr));
+    }
+
+    #[test]
+    fn connection_state_response_round_trip() {
+        let original = ConnectionStateResponse {
+            channel: 0x0A,
+            status: ConnectionStatus::NoError,
+        };
+
+        let frame = Frame::from(original);
+        let bytes: Vec<u8> = Vec::try_from(frame).unwrap();
+        let frame = Frame::try_from(bytes.as_slice()).unwrap();
+        let parsed = ConnectionStateResponse::try_parse(frame).unwrap();
+
+        assert_eq!(parsed.channel, 0x0A);
+        assert_eq!(parsed.status, ConnectionStatus::NoError);
+    }
+
+    #[test]
+    fn connection_state_response_error_round_trip() {
+        let original = ConnectionStateResponse {
+            channel: 0x05,
+            status: ConnectionStatus::ConnectionId,
+        };
+
+        let frame = Frame::from(original);
+        let bytes: Vec<u8> = Vec::try_from(frame).unwrap();
+        let frame = Frame::try_from(bytes.as_slice()).unwrap();
+        let parsed = ConnectionStateResponse::try_parse(frame).unwrap();
+
+        assert_eq!(parsed.channel, 0x05);
+        assert_eq!(parsed.status, ConnectionStatus::ConnectionId);
+    }
+}

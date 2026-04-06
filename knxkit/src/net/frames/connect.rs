@@ -149,3 +149,71 @@ impl CRD for CRDTunnel {
         gen_tuple((gen_u8(0x04), gen_u8(0x04), self.address.gen()))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::net::frames::{Frame, FramePayload};
+    use std::net::SocketAddr;
+
+    #[test]
+    fn connect_request_round_trip() {
+        let addr: SocketAddr = "192.168.1.10:3671".parse().unwrap();
+        let original = ConnectRequest {
+            control: HPAI::new_udp(addr),
+            data: HPAI::new_udp(addr),
+            cri: CRITunnel {
+                layer: TunnelLayer::Link,
+            },
+        };
+
+        let frame = Frame::from(original);
+        let bytes: Vec<u8> = Vec::try_from(frame).unwrap();
+        let frame = Frame::try_from(bytes.as_slice()).unwrap();
+        let parsed = ConnectRequest::<CRITunnel>::try_parse(frame).unwrap();
+
+        assert_eq!(parsed.control, HPAI::new_udp(addr));
+        assert_eq!(parsed.data, HPAI::new_udp(addr));
+        assert_eq!(parsed.cri.layer, TunnelLayer::Link);
+    }
+
+    #[test]
+    fn connect_response_error_round_trip() {
+        let original: ConnectResponse<CRDTunnel> =
+            ConnectResponse::Error(ConnectStatus::NoMoreConnections);
+
+        let frame = Frame::from(original);
+        let bytes: Vec<u8> = Vec::try_from(frame).unwrap();
+        let frame = Frame::try_from(bytes.as_slice()).unwrap();
+        let parsed = ConnectResponse::<CRDTunnel>::try_parse(frame).unwrap();
+
+        match parsed {
+            ConnectResponse::Error(status) => assert_eq!(status, ConnectStatus::NoMoreConnections),
+            _ => panic!("expected Error variant"),
+        }
+    }
+
+    #[test]
+    fn connect_response_ok_round_trip_via_bytes() {
+        // CRDTunnel.address is private, so test via known frame bytes
+        let hex = "06100206001411000801c0a808020e57040411fb";
+        let bytes = hex::decode(hex).unwrap();
+        let frame = Frame::try_from(bytes.as_slice()).unwrap();
+        let parsed = ConnectResponse::<CRDTunnel>::try_parse(frame).unwrap();
+
+        match &parsed {
+            ConnectResponse::Ok { channel, .. } => {
+                // Re-serialize and parse again
+                let frame2 = Frame::from(parsed.clone());
+                let bytes2: Vec<u8> = Vec::try_from(frame2).unwrap();
+                let frame3 = Frame::try_from(bytes2.as_slice()).unwrap();
+                let reparsed = ConnectResponse::<CRDTunnel>::try_parse(frame3).unwrap();
+                match reparsed {
+                    ConnectResponse::Ok { channel: ch2, .. } => assert_eq!(*channel, ch2),
+                    _ => panic!("expected Ok variant"),
+                }
+            }
+            _ => panic!("expected Ok variant"),
+        }
+    }
+}
