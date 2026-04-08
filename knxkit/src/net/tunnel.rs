@@ -539,7 +539,7 @@ impl crate::connection::KnxBusConnection for TunnelConnection {
     }
 
     fn address(&self) -> IndividualAddress {
-        todo!()
+        IndividualAddress::new(0)
     }
 }
 
