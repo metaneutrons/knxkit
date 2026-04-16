@@ -55,9 +55,7 @@ fn encode_format(writer: &Ident, value: &TokenStream, format: &Format) -> TokenS
                 writer.write_from(#value as u8).unwrap();
             },
             "iso-8859-1" => quote! {
-                writer.write_from(encoding::codec::singlebyte::iso_8859_1::backward(
-                   #value as u32,
-                )).unwrap();
+                writer.write_from(if (#value as u32) < 256 { #value as u8 } else { b'?' }).unwrap();
             },
 
             _ => panic!("unsupported encoding: {}", encoding),
@@ -69,11 +67,11 @@ fn encode_format(writer: &Ident, value: &TokenStream, format: &Format) -> TokenS
             variable_length: false,
             ..
         } => {
-            let codec = super::codec(encoding);
+            let encode_into_fn = super::encode_into_fn(encoding);
 
             quote! {
                 let mut buffer = vec![0u8; (#width / 8) as usize];
-                #codec.encode_to(#value.as_str(), EncoderTrap::Replace, &mut buffer).unwrap();
+                #encode_into_fn(#value.as_str(), &mut buffer);
 
                 writer.write_bytes(&buffer).unwrap();
             }
@@ -84,12 +82,10 @@ fn encode_format(writer: &Ident, value: &TokenStream, format: &Format) -> TokenS
             variable_length: true,
             ..
         } => {
-            let codec = super::codec(encoding);
+            let encode_fn = super::encode_fn(encoding);
 
             quote! {
-                let bytes = #codec
-                    .encode(#value.as_str(), EncoderTrap::Replace)
-                    .unwrap();
+                let bytes = #encode_fn(#value.as_str());
 
                 #writer.write_bytes(&bytes).unwrap();
                 #writer.write_bytes(&[0]).unwrap();

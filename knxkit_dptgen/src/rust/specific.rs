@@ -183,13 +183,43 @@ pub fn generate(masterdata: &MasterData) -> TokenStream {
     quote! {
         use std::{io::{SeekFrom, Cursor}, fmt::{Display, Debug}};
         use bitstream_io::{BitRead, BitReader, BE, BitWriter, BitWrite, BigEndian};
-        use encoding::{Encoding, all::{ASCII, ISO_8859_1, UTF_8}, types::{EncoderTrap, DecoderTrap}};
         use serde::{Serialize, Deserialize};
         use knxkit::{
             project::DPT,
             core::DataPoint
         };
         use crate::{specific::{decode_knxf16, encode_knxf16, Reserved}, Error};
+
+        mod text {
+            /// Encode a string to ISO-8859-1 bytes, replacing unmappable chars with '?'.
+            pub fn encode_iso8859(s: &str) -> Vec<u8> {
+                s.chars().map(|c| if (c as u32) < 256 { c as u8 } else { b'?' }).collect()
+            }
+            /// Encode a string to ISO-8859-1 into a fixed-size buffer.
+            pub fn encode_iso8859_into(s: &str, buf: &mut [u8]) {
+                for (dst, c) in buf.iter_mut().zip(s.chars()) {
+                    *dst = if (c as u32) < 256 { c as u8 } else { b'?' };
+                }
+            }
+            /// Decode ISO-8859-1 bytes to a String.
+            pub fn decode_iso8859(bytes: &[u8]) -> String {
+                bytes.iter().map(|&b| b as char).collect()
+            }
+            /// Encode a string to ASCII bytes, replacing non-ASCII with '?'.
+            pub fn encode_ascii(s: &str) -> Vec<u8> {
+                s.bytes().map(|b| if b < 128 { b } else { b'?' }).collect()
+            }
+            /// Encode a string to ASCII into a fixed-size buffer.
+            pub fn encode_ascii_into(s: &str, buf: &mut [u8]) {
+                for (dst, b) in buf.iter_mut().zip(s.bytes()) {
+                    *dst = if b < 128 { b } else { b'?' };
+                }
+            }
+            /// Decode ASCII bytes to a String.
+            pub fn decode_ascii(bytes: &[u8]) -> String {
+                bytes.iter().map(|&b| if b < 128 { b as char } else { '?' }).collect()
+            }
+        }
 
         #(#subtypes)*
     }

@@ -49,10 +49,7 @@ fn decode_format(format: &Format) -> TokenStream {
                 reader.read_to::<u8>()? as char
             },
             "iso-8859-1" => quote! {
-                char::from_u32(
-                    encoding::codec::singlebyte::iso_8859_1::forward(reader.read_to()?) as u32,
-                )
-                .unwrap(),
+                reader.read_to::<u8>()? as char,
             },
 
             _ => panic!("unsupported encoding: {}", encoding),
@@ -64,12 +61,12 @@ fn decode_format(format: &Format) -> TokenStream {
             variable_length: false,
             ..
         } => {
-            let codec = super::codec(encoding);
+            let decode_fn = super::decode_fn(encoding);
 
             quote!({
                 let mut value = [0u8; (#width / 8) as usize];
                 reader.read_bytes(&mut value)?;
-                #codec.decode(&value, DecoderTrap::Replace).unwrap()
+                #decode_fn(&value)
             })
         }
 
@@ -78,7 +75,7 @@ fn decode_format(format: &Format) -> TokenStream {
             variable_length: true,
             ..
         } => {
-            let codec = super::codec(encoding);
+            let decode_fn = super::decode_fn(encoding);
 
             quote!({
                 let mut buffer = [0u8; 2048];
@@ -90,7 +87,7 @@ fn decode_format(format: &Format) -> TokenStream {
                     .position(|&c| c == b'\0')
                     .unwrap_or(buffer.len());
 
-                #codec.decode(&buffer[0..end], DecoderTrap::Replace).unwrap()
+                #decode_fn(&buffer[0..end])
             })
         }
 

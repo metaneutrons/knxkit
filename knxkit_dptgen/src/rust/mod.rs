@@ -41,12 +41,29 @@ pub fn generate(master: &MasterData, destination: &Path) -> Result<()> {
     Ok(())
 }
 
-pub fn codec(codec: &knxkit::project::SharedString) -> TokenStream {
+pub fn decode_fn(codec: &knxkit::project::SharedString) -> TokenStream {
     match &**codec.to_owned() {
-        "iso-8859-1" => quote!(ISO_8859_1),
-        "utf-8" => quote!(UTF_8),
-        "us-ascii" => quote!(ASCII),
+        "iso-8859-1" => quote!(text::decode_iso8859),
+        "utf-8" => quote!(text::decode_iso8859),
+        "us-ascii" => quote!(text::decode_ascii),
+        _ => panic!("unsupported encoding: {}", codec),
+    }
+}
 
+pub fn encode_fn(codec: &knxkit::project::SharedString) -> TokenStream {
+    match &**codec.to_owned() {
+        "iso-8859-1" => quote!(text::encode_iso8859),
+        "utf-8" => quote!(text::encode_iso8859),
+        "us-ascii" => quote!(text::encode_ascii),
+        _ => panic!("unsupported encoding: {}", codec),
+    }
+}
+
+pub fn encode_into_fn(codec: &knxkit::project::SharedString) -> TokenStream {
+    match &**codec.to_owned() {
+        "iso-8859-1" => quote!(text::encode_iso8859_into),
+        "utf-8" => quote!(text::encode_iso8859_into),
+        "us-ascii" => quote!(text::encode_ascii_into),
         _ => panic!("unsupported encoding: {}", codec),
     }
 }

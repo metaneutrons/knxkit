@@ -4,11 +4,30 @@ use crate::{
     Error,
 };
 use bitstream_io::{BigEndian, BitRead, BitReader, BitWrite, BitWriter, BE};
-use encoding::{
-    all::{ASCII, ISO_8859_1, UTF_8},
-    types::{DecoderTrap, EncoderTrap},
-    Encoding,
-};
+mod text {
+    pub fn encode_iso8859(s: &str) -> Vec<u8> {
+        s.chars().map(|c| if (c as u32) < 256 { c as u8 } else { b'?' }).collect()
+    }
+    pub fn encode_iso8859_into(s: &str, buf: &mut [u8]) {
+        for (dst, c) in buf.iter_mut().zip(s.chars()) {
+            *dst = if (c as u32) < 256 { c as u8 } else { b'?' };
+        }
+    }
+    pub fn decode_iso8859(bytes: &[u8]) -> String {
+        bytes.iter().map(|&b| b as char).collect()
+    }
+    pub fn encode_ascii(s: &str) -> Vec<u8> {
+        s.bytes().map(|b| if b < 128 { b } else { b'?' }).collect()
+    }
+    pub fn encode_ascii_into(s: &str, buf: &mut [u8]) {
+        for (dst, b) in buf.iter_mut().zip(s.bytes()) {
+            *dst = if b < 128 { b } else { b'?' };
+        }
+    }
+    pub fn decode_ascii(bytes: &[u8]) -> String {
+        bytes.iter().map(|&b| if b < 128 { b as char } else { '?' }).collect()
+    }
+}
 use knxkit::{core::DataPoint, project::DPT};
 use serde::{Deserialize, Serialize};
 use std::{
@@ -1244,9 +1263,7 @@ impl crate::specific::SpecificDataPoint for DPT_4_2 {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
         writer
-            .write_from(encoding::codec::singlebyte::iso_8859_1::backward(
-                self.0 as u32,
-            ))
+            .write_from(if (self.0 as u32) < 256 { self.0 as u8 } else { b'?' })
             .unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
@@ -1256,7 +1273,7 @@ impl crate::specific::SpecificDataPoint for DPT_4_2 {
             let mut reader: BitReader<_, BE> = BitReader::new(Cursor::new(&bytes));
             Ok(DPT_4_2(
                 char::from_u32(
-                    encoding::codec::singlebyte::iso_8859_1::forward(reader.read_to()?) as u32,
+                    reader.read_to::<u8>()? as u32,
                 )
                 .unwrap(),
             ))
@@ -6413,9 +6430,7 @@ impl crate::specific::SpecificDataPoint for DPT_16_0 {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
         let mut buffer = vec![0u8; (112u16 / 8) as usize];
-        ASCII
-            .encode_to(self.0.as_str(), EncoderTrap::Replace, &mut buffer)
-            .unwrap();
+        text::encode_ascii_into(self.0.as_str(), &mut buffer);
         writer.write_bytes(&buffer).unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
@@ -6426,7 +6441,7 @@ impl crate::specific::SpecificDataPoint for DPT_16_0 {
             Ok(DPT_16_0({
                 let mut value = [0u8; (112u16 / 8) as usize];
                 reader.read_bytes(&mut value)?;
-                ASCII.decode(&value, DecoderTrap::Replace).unwrap()
+                text::decode_ascii(&value)
             }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
@@ -6447,9 +6462,7 @@ impl crate::specific::SpecificDataPoint for DPT_16_1 {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
         let mut buffer = vec![0u8; (112u16 / 8) as usize];
-        ISO_8859_1
-            .encode_to(self.0.as_str(), EncoderTrap::Replace, &mut buffer)
-            .unwrap();
+        text::encode_iso8859_into(self.0.as_str(), &mut buffer);
         writer.write_bytes(&buffer).unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
@@ -6460,7 +6473,7 @@ impl crate::specific::SpecificDataPoint for DPT_16_1 {
             Ok(DPT_16_1({
                 let mut value = [0u8; (112u16 / 8) as usize];
                 reader.read_bytes(&mut value)?;
-                ISO_8859_1.decode(&value, DecoderTrap::Replace).unwrap()
+                text::decode_iso8859(&value)
             }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
@@ -6481,9 +6494,7 @@ impl crate::specific::SpecificDataPoint for DPT_16_x {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
         let mut buffer = vec![0u8; (112u16 / 8) as usize];
-        ASCII
-            .encode_to(self.0.as_str(), EncoderTrap::Replace, &mut buffer)
-            .unwrap();
+        text::encode_ascii_into(self.0.as_str(), &mut buffer);
         writer.write_bytes(&buffer).unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
@@ -6494,7 +6505,7 @@ impl crate::specific::SpecificDataPoint for DPT_16_x {
             Ok(DPT_16_x({
                 let mut value = [0u8; (112u16 / 8) as usize];
                 reader.read_bytes(&mut value)?;
-                ASCII.decode(&value, DecoderTrap::Replace).unwrap()
+                text::decode_ascii(&value)
             }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
@@ -9945,9 +9956,7 @@ impl crate::specific::SpecificDataPoint for DPT_24_1 {
     fn to_data_point(&self) -> DataPoint {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
-        let bytes = ISO_8859_1
-            .encode(self.0.as_str(), EncoderTrap::Replace)
-            .unwrap();
+        let bytes = text::encode_iso8859(self.0.as_str());
         writer.write_bytes(&bytes).unwrap();
         writer.write_bytes(&[0]).unwrap();
         writer.flush().unwrap();
@@ -9963,9 +9972,7 @@ impl crate::specific::SpecificDataPoint for DPT_24_1 {
                     .iter()
                     .position(|&c| c == b'\0')
                     .unwrap_or(buffer.len());
-                ISO_8859_1
-                    .decode(&buffer[0..end], DecoderTrap::Replace)
-                    .unwrap()
+                text::decode_iso8859(&buffer[0..end])
             }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
@@ -9985,9 +9992,7 @@ impl crate::specific::SpecificDataPoint for DPT_24_x {
     fn to_data_point(&self) -> DataPoint {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
-        let bytes = ISO_8859_1
-            .encode(self.0.as_str(), EncoderTrap::Replace)
-            .unwrap();
+        let bytes = text::encode_iso8859(self.0.as_str());
         writer.write_bytes(&bytes).unwrap();
         writer.write_bytes(&[0]).unwrap();
         writer.flush().unwrap();
@@ -10003,9 +10008,7 @@ impl crate::specific::SpecificDataPoint for DPT_24_x {
                     .iter()
                     .position(|&c| c == b'\0')
                     .unwrap_or(buffer.len());
-                ISO_8859_1
-                    .decode(&buffer[0..end], DecoderTrap::Replace)
-                    .unwrap()
+                text::decode_iso8859(&buffer[0..end])
             }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
@@ -10463,7 +10466,7 @@ impl crate::specific::SpecificDataPoint for DPT_28_1 {
     fn to_data_point(&self) -> DataPoint {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
-        let bytes = UTF_8.encode(self.0.as_str(), EncoderTrap::Replace).unwrap();
+        let bytes = self.0.as_bytes().to_vec();
         writer.write_bytes(&bytes).unwrap();
         writer.write_bytes(&[0]).unwrap();
         writer.flush().unwrap();
@@ -10479,7 +10482,7 @@ impl crate::specific::SpecificDataPoint for DPT_28_1 {
                     .iter()
                     .position(|&c| c == b'\0')
                     .unwrap_or(buffer.len());
-                UTF_8.decode(&buffer[0..end], DecoderTrap::Replace).unwrap()
+                String::from_utf8_lossy(&buffer[0..end]).into_owned()
             }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
@@ -10499,7 +10502,7 @@ impl crate::specific::SpecificDataPoint for DPT_28_x {
     fn to_data_point(&self) -> DataPoint {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
-        let bytes = UTF_8.encode(self.0.as_str(), EncoderTrap::Replace).unwrap();
+        let bytes = self.0.as_bytes().to_vec();
         writer.write_bytes(&bytes).unwrap();
         writer.write_bytes(&[0]).unwrap();
         writer.flush().unwrap();
@@ -10515,7 +10518,7 @@ impl crate::specific::SpecificDataPoint for DPT_28_x {
                     .iter()
                     .position(|&c| c == b'\0')
                     .unwrap_or(buffer.len());
-                UTF_8.decode(&buffer[0..end], DecoderTrap::Replace).unwrap()
+                String::from_utf8_lossy(&buffer[0..end]).into_owned()
             }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
@@ -12031,9 +12034,7 @@ impl crate::specific::SpecificDataPoint for DPT_234_1 {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
         let mut buffer = vec![0u8; (16u16 / 8) as usize];
-        ASCII
-            .encode_to(self.0.as_str(), EncoderTrap::Replace, &mut buffer)
-            .unwrap();
+        text::encode_ascii_into(self.0.as_str(), &mut buffer);
         writer.write_bytes(&buffer).unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
@@ -12044,7 +12045,7 @@ impl crate::specific::SpecificDataPoint for DPT_234_1 {
             Ok(DPT_234_1({
                 let mut value = [0u8; (16u16 / 8) as usize];
                 reader.read_bytes(&mut value)?;
-                ASCII.decode(&value, DecoderTrap::Replace).unwrap()
+                text::decode_ascii(&value)
             }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
@@ -12065,9 +12066,7 @@ impl crate::specific::SpecificDataPoint for DPT_234_x {
         let mut bytes = Vec::new();
         let mut writer = BitWriter::endian(&mut bytes, BigEndian);
         let mut buffer = vec![0u8; (16u16 / 8) as usize];
-        ASCII
-            .encode_to(self.0.as_str(), EncoderTrap::Replace, &mut buffer)
-            .unwrap();
+        text::encode_ascii_into(self.0.as_str(), &mut buffer);
         writer.write_bytes(&buffer).unwrap();
         writer.flush().unwrap();
         DataPoint::Long(bytes)
@@ -12078,7 +12077,7 @@ impl crate::specific::SpecificDataPoint for DPT_234_x {
             Ok(DPT_234_x({
                 let mut value = [0u8; (16u16 / 8) as usize];
                 reader.read_bytes(&mut value)?;
-                ASCII.decode(&value, DecoderTrap::Replace).unwrap()
+                text::decode_ascii(&value)
             }))
         } else {
             Err(Error::InvalidDataPointValue(data.to_owned()))
